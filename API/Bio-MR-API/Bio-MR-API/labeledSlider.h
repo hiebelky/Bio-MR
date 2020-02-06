@@ -12,6 +12,7 @@ public:
 	inline void SetMaxValueDouble(double val) { maxValue = val; }
 	inline void SetMinValueDouble(double val) { minValue = val; }
 	inline void SetNumTicks(int val) { m_pSlider->setMaximum(val); }
+	inline void UpdateSliderPosition() { OnSliderValueChanged(m_pSlider->value()); }
 	double GetDoubleValue();
 
 signals:

@@ -14,9 +14,11 @@ Biomr::Biomr(QWidget *parent)
 	ui.RainIntensitySlider->SetNumTicks(100);
 	connect(ui.RainIntensitySlider, &LabeledSlider::valueChanged, this, &Biomr::SetRainIntensity);
 
-	ui.DayNightCycleSlider->SetMaxValueDouble(60);
+	ui.DayNightCycleSlider->SetMaxValueDouble(30);
 	ui.DayNightCycleSlider->SetMinValueDouble(0.05);
 	ui.DayNightCycleSlider->SetNumTicks(1000);
+	ui.DayNightCycleSlider->UpdateSliderPosition();
+	connect(ui.DayNightCycleSlider, &LabeledSlider::valueChanged, this, &Biomr::SetDayNightCycle);
 
 
 	// Set up sockets
@@ -60,6 +62,13 @@ void Biomr::SendGameEngineDatagram(QString& datagram)
 
 void Biomr::SetRainIntensity(double val)
 {
-	QString command = QString("RainIntensity;%1").arg(val);
+	QString command = QString("RainIntensity;%1;").arg(val);
 	SendGameEngineDatagram(command);
 }
+
+void Biomr::SetDayNightCycle(double val)
+{
+	QString command = QString("DayLength;%1;").arg(val);
+	SendGameEngineDatagram(command);
+}
+

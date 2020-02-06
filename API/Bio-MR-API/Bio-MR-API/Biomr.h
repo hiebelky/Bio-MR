@@ -24,6 +24,7 @@ public:
 
 public slots:
 	void SetRainIntensity(double val);
+	void SetDayNightCycle(double val);
 
 private:
 	Ui::BiomrClass ui;
