@@ -21,7 +21,7 @@ CS51 Design and implementation of a framework for bio-informed 3D user interacti
 3. Install the extension.
 4. Restart your computer.
 
-### 3. Indicate a Qt Path
+### 3. Set the Qt Path
 1. Open Visual Studio 2019
 2. Navigate to Extensions > QT VS Tools > QT Options.
 3. Add a Qt Version so Visual Studio knows where to look for Qt files. IMPORTANT: Make sure the name matches the one in the image, otherwise, you will need to make modifications to the VS project file to build properly.
