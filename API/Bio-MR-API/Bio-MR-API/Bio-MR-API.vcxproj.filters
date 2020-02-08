@@ -8,6 +8,9 @@
     <ClCompile Include="labeledSlider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="labeledSlider.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="NetworkManager.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
