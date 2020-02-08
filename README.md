@@ -2,6 +2,7 @@
 CS51 Design and implementation of a framework for bio-informed 3D user interaction
 
 ## Building the API
+
 ### 1. Install Qt
 1. Download the Qt Online Installer from the bottom of this page: https://www.qt.io/download-open-source
 2. Run the installer. You do not need to make an account.
@@ -16,4 +17,17 @@ CS51 Design and implementation of a framework for bio-informed 3D user interacti
 ### 2. Install QT VS Tools
 1. Open Visual Studio 2019
 2. Navigate to Extensions > Manage Extensions. Search for Qt.
-![](images/VS_tools.png)
+![](images/VS_tools.PNG)
+3. Install the extension.
+4. Restart your computer.
+
+### 3. Indicate a Qt Path
+1. Open Visual Studio 2019
+2. Navigate to Extensions > QT VS Tools > QT Options.
+3. Add a Qt Version so Visual Studio knows where to look for Qt files. IMPORTANT: Make sure the name matches the one in the image, otherwise, you will need to make modifications to the VS project file to build properly.
+![](images/qt_vs_options.PNG)
+
+### 4. Build
+1. Clone the repository.
+2. Open "Bio-MR/API/Bio-MR-API/Bio-MR-API.sln"
+3. Press F5 to build and run!
