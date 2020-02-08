@@ -22,10 +22,17 @@ public:
 	NetworkManager(QObject* parent = nullptr);
 
 	void SendGameEngineDatagram(QString& datagram);
+	void SendIMotionsDatagram(QString& datagram);
+
+signals:
+	void registerCommand(QStringList& newCommand);
 
 private:
 	void ReadImotionsDatagrams();
 	void ProcessImotionsDatagram(QNetworkDatagram& datagram);
+
+	void ReadGameEngineDatagrams();
+	void ProcessGameEngineDatagram(QNetworkDatagram& datagram);
 
 
 	// One socket for each communication path
