@@ -115,5 +115,5 @@ void NetworkManager::SendGameEngineDatagram(QString& datagram)
 void NetworkManager::SendIMotionsDatagram(QString& datagram)
 {
 	QByteArray& rawData = datagram.toUtf8();
-	m_pIMotionsSender->writeDatagram(rawData, QHostAddress::LocalHost, SEND_TO_GAME_ENGINE_PORT);
+	m_pIMotionsSender->writeDatagram(rawData, QHostAddress::LocalHost, SEND_TO_IMOTIONS_PORT);
 }
