@@ -33,6 +33,7 @@ void Aapi_socket::BeginPlay()
 	// Set default values
 	SetRainIntensity(0.f);
 	SetDayLength(1.f);
+	CreateFetchQuest(3);
 }
 
 // Called every frame
@@ -176,6 +177,7 @@ void Aapi_socket::ProcessDatagram(UDPDatagarm& datagram)
 		SetDayLength(val);
 	} else if (datagram.m_commandName == FETCH_QUEST_NAME) {
 		int32 val = FCString::Atoi(*datagram.m_arguments[0]);
+		ScreenMsg("Creating Fetch Quest with items: ", val);
 		CreateFetchQuest(val);
 	}
 }
