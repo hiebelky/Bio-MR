@@ -17,13 +17,18 @@ Aapi_socket::Aapi_socket()
 void Aapi_socket::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Start the reciever and 
+	StartUDPReceiver("Game Engine Receiver", "127.0.0.1", RECEIVE_FROM_API_PORT);
+	StartUDPSender("Game Engine Sender", "127.0.0.1", SEND_TO_API_PORT);
+
+	SendUDPDatagram(TEXT("RegisterCommand;Rain Intensity;False;Float;0;0;1;"));
+
+	// Set default values
 	SetRainIntensity(0.f);
 	SetDayLength(1.f);
 	CreateFetchQuest(3);
 	CreateFetchQuest(2);
-	
-	StartUDPReceiver("Bio-Sensor Receiver", "127.0.0.1", 60002);
 }
 
 // Called every frame
@@ -47,13 +52,18 @@ void Aapi_socket::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		ListenSocket->Close();
 		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(ListenSocket);
 	}
+	if (SenderSocket)
+	{
+		SenderSocket->Close();
+		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(SenderSocket);
+	}
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//Rama's Start UDP Receiver
+
+// -------------------------------------
+// UDP Receiver
+// -------------------------------------
 bool Aapi_socket::StartUDPReceiver(
 	const FString& YourChosenSocketName,
 	const FString& TheIP,
@@ -94,7 +104,7 @@ void Aapi_socket::Recv(const FArrayReaderPtr& ArrayReaderPtr, const FIPv4Endpoin
 	// Copy the data to a mutable buffer
 	TArray<uint8> rawData;
 	rawData.Init(0, ArrayReaderPtr->Num());
-	for (int i = ArrayReaderPtr->Num() - 1; i >= 0; --i) {
+	for (int32 i = ArrayReaderPtr->Num() - 1; i >= 0; --i) {
 		rawData[i] = ArrayReaderPtr->Pop();
 	}
 
@@ -163,4 +173,83 @@ void Aapi_socket::ProcessPacket(UDPPacket& packet)
 			SetRainIntensity(val);
 		}
 	}
+}
+
+
+// -------------------------------------
+// UDP Sender
+// -------------------------------------
+bool Aapi_socket::StartUDPSender(
+	const FString& YourChosenSocketName,
+	const FString& TheIP,
+	const int32 ThePort
+) {
+	//Create Remote Address.
+	RemoteAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
+
+	bool bIsValid;
+	RemoteAddr->SetIp(*TheIP, bIsValid);
+	RemoteAddr->SetPort(ThePort);
+
+	if (!bIsValid)
+	{
+		ScreenMsg("Rama UDP Sender>> IP address was not valid!", TheIP);
+		return false;
+	}
+
+	SenderSocket = FUdpSocketBuilder(*YourChosenSocketName).AsReusable().WithBroadcast();
+
+	//Set Send Buffer Size
+	int32 SendSize = 2 * 1024 * 1024;
+	SenderSocket->SetSendBufferSize(SendSize, SendSize);
+	SenderSocket->SetReceiveBufferSize(SendSize, SendSize);
+
+	ScreenMsg(TEXT("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+	ScreenMsg(TEXT("Rama ****UDP**** Sender Initialized Successfully!!!"));
+	ScreenMsg(TEXT("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+	return true;
+}
+
+
+
+bool Aapi_socket::SendUDPDatagram(FString ToSend)
+{
+	if (!SenderSocket)
+	{
+		ScreenMsg("No sender socket");
+		return false;
+	}
+	//~~~~~~~~~~~~~~~~
+
+	int32 BytesSent = 0;
+
+	/*FAnyCustomData NewData;
+	NewData.Scale = FMath::FRandRange(0, 1000);
+	NewData.Count = FMath::RandRange(0, 100);
+	NewData.Color = FLinearColor(FMath::FRandRange(0, 1), FMath::FRandRange(0, 1), FMath::FRandRange(0, 1), 1);
+
+	FArrayWriter Writer;
+
+	Writer << NewData; //Serializing our custom data, thank you UE4!*/
+
+	ANSICHAR* utf8Data = TCHAR_TO_UTF8(*ToSend);
+	int32 count = ToSend.Len();
+	/*uint8* data = new uint8[count];
+	StringToBytes(utf8Data, data, count);*/
+	uint8* data = reinterpret_cast<uint8*>(utf8Data);
+
+	SenderSocket->SendTo(data, count, BytesSent, *RemoteAddr);
+
+	if (BytesSent <= 0)
+	{
+		const FString Str = "Socket is valid but the receiver received 0 bytes, make sure it is listening properly!";
+		UE_LOG(LogTemp, Error, TEXT("%s"), *Str);
+		ScreenMsg(Str);
+		return false;
+	}
+
+	ScreenMsg("UDP~ Send Succcess! Bytes Sent = ", BytesSent);
+
+	return true;
 }

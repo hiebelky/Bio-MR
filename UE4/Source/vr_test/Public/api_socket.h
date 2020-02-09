@@ -7,6 +7,9 @@
 #include "Networking.h"
 #include "api_socket.generated.h"
 
+const int32 SEND_TO_API_PORT = 60003;
+const int32 RECEIVE_FROM_API_PORT = 60002;
+
 UCLASS()
 class VR_TEST_API Aapi_socket : public AActor
 {
@@ -40,8 +43,10 @@ public:
 		FString m_commandName;
 		TArray<FString> m_arguments;
 	};
-	
-	// Objects used for recieving UDP packets
+
+	// -------------------------------------
+	// UDP Receiver
+	// -------------------------------------
 	FSocket* ListenSocket = nullptr;
 	FUdpSocketReceiver* UDPReceiver = nullptr;
 
@@ -53,6 +58,28 @@ public:
 	FString StringFromBinaryArray(TArray<uint8> BinaryArray);
 	void CreatePacket(UDPPacket* out, FString& data);
 	void ProcessPacket(UDPPacket& packet);
+
+
+	// -------------------------------------
+	// UDP Sender
+	// -------------------------------------
+	FSocket* SenderSocket = nullptr;
+	TSharedPtr<FInternetAddr> RemoteAddr;
+
+	bool SendUDPDatagram(FString ToSend);
+
+	bool StartUDPSender(
+		const FString& YourChosenSocketName,
+		const FString& TheIP,
+		const int32 ThePort
+	);
+
+
+
+
+
+
+
 
 
 
