@@ -83,7 +83,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Biomr.cpp" />
-    <ClCompile Include="labeledSlider.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ParameterControlWidget.cpp" />
@@ -96,9 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Biomr.qrc" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="labeledSlider.h" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="NetworkManager.h" />

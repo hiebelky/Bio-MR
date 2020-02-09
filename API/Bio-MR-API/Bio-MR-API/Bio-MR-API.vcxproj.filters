@@ -5,9 +5,6 @@
     <ClCompile Include="Biomr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="labeledSlider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,9 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Biomr.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="labeledSlider.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="NetworkManager.h">

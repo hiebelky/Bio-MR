@@ -2,7 +2,6 @@
 
 #include "NetworkManager.h"
 #include "ParameterControlWidget.h"
-#include "labeledSlider.h"
 
 
 Biomr::Biomr(QWidget* parent)
@@ -13,18 +12,6 @@ Biomr::Biomr(QWidget* parent)
 	// Set up the network manager
 	m_pNetworkManager = new NetworkManager(this);
 	connect(m_pNetworkManager, &NetworkManager::registerCommand, this, &Biomr::AddParameterControlWidget);
-
-	// Set up sliders with min/max values
-	/*ui.RainIntensitySlider->SetMaxValueDouble(1.0);
-	ui.RainIntensitySlider->SetMinValueDouble(0.0);
-	ui.RainIntensitySlider->SetNumTicks(100);
-	connect(ui.RainIntensitySlider, &LabeledSlider::valueChanged, this, &Biomr::SetRainIntensity);
-
-	ui.DayNightCycleSlider->SetMaxValueDouble(30);
-	ui.DayNightCycleSlider->SetMinValueDouble(0.05);
-	ui.DayNightCycleSlider->SetNumTicks(1000);
-	ui.DayNightCycleSlider->UpdateSliderPosition();
-	connect(ui.DayNightCycleSlider, &LabeledSlider::valueChanged, this, &Biomr::SetDayNightCycle);*/
 }
 
 
@@ -32,6 +19,7 @@ void Biomr::AddParameterControlWidget(QStringList& params)
 {
 	ParameterControlWidget* pTempControlWidget = new ParameterControlWidget(params, this);
 
+	// Alert the network manager when new data is ready for transmit
 	connect(pTempControlWidget, &ParameterControlWidget::DatagramReady, m_pNetworkManager, &NetworkManager::SendGameEngineDatagram);
 
 	// Insert at the end
