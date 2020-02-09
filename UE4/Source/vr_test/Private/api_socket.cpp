@@ -18,17 +18,21 @@ void Aapi_socket::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Start the reciever and 
+	// Start the receiver and 
 	StartUDPReceiver("Game Engine Receiver", "127.0.0.1", RECEIVE_FROM_API_PORT);
 	StartUDPSender("Game Engine Sender", "127.0.0.1", SEND_TO_API_PORT);
 
-	SendUDPDatagram(TEXT("RegisterCommand;Rain Intensity;False;Float;0;0;1;"));
+	// Setup all the modifiable commands
+	FString command1 = FString("RegisterCommand;").Append(RAIN_INTENSITY_NAME).Append(";False;Float;0;0;1;");
+	SendUDPDatagram(command1);
+	FString command2 = FString("RegisterCommand;").Append(DAY_LENGTH_NAME).Append(";False;Float;0.05;1;60;");
+	SendUDPDatagram(command2);
+	FString command3 = FString("RegisterCommand;").Append(FETCH_QUEST_NAME).Append(";True;Int;1;3;100;");
+	SendUDPDatagram(command3);
 
 	// Set default values
 	SetRainIntensity(0.f);
 	SetDayLength(1.f);
-	CreateFetchQuest(3);
-	CreateFetchQuest(2);
 }
 
 // Called every frame
@@ -72,22 +76,16 @@ bool Aapi_socket::StartUDPReceiver(
 
 	ScreenMsg("RECEIVER INIT");
 
-	//~~~
-
 	FIPv4Address Addr;
 	FIPv4Address::Parse(TheIP, Addr);
 
-	//Create Socket
+	// Create socket endpoint
 	FIPv4Endpoint Endpoint(Addr, ThePort);
 
-	//BUFFER SIZE
+	// Set the default buffer size
 	int32 BufferSize = 2 * 1024 * 1024;
 
-	ListenSocket = FUdpSocketBuilder(*YourChosenSocketName)
-		.AsNonBlocking()
-		.AsReusable()
-		.BoundToEndpoint(Endpoint)
-		.WithReceiveBufferSize(BufferSize);
+	ListenSocket = FUdpSocketBuilder(*YourChosenSocketName).AsNonBlocking().AsReusable().BoundToEndpoint(Endpoint).WithReceiveBufferSize(BufferSize);
 
 	FTimespan ThreadWaitTime = FTimespan::FromMilliseconds(100);
 	UDPReceiver = new FUdpSocketReceiver(ListenSocket, ThreadWaitTime, TEXT("UDP RECEIVER"));
@@ -99,7 +97,7 @@ bool Aapi_socket::StartUDPReceiver(
 
 void Aapi_socket::Recv(const FArrayReaderPtr& ArrayReaderPtr, const FIPv4Endpoint& EndPt)
 {
-	ScreenMsg("Received bytes", ArrayReaderPtr->Num());
+	ScreenMsg("Received bytes: ", ArrayReaderPtr->Num());
 
 	// Copy the data to a mutable buffer
 	TArray<uint8> rawData;
@@ -110,16 +108,15 @@ void Aapi_socket::Recv(const FArrayReaderPtr& ArrayReaderPtr, const FIPv4Endpoin
 
 	// Convert the data into a string
 	FString parsedMessage = StringFromBinaryArray(rawData);
-	ScreenMsg("Message= ", parsedMessage);
+	ScreenMsg("Message: ", parsedMessage);
 	PrintToLog(parsedMessage);
 
-	// Convert the string into a packet
-	UDPPacket packet;
-	CreatePacket(&packet, parsedMessage);
-	ScreenMsg(packet);
+	// Convert the string into a datagram
+	UDPDatagarm datagram;
+	CreateDatagram(&datagram, parsedMessage);
 
 	// Call function to handle this new message
-	ProcessPacket(packet);
+	ProcessDatagram(datagram);
 }
 
 //Rama's String From Binary Array
@@ -149,7 +146,7 @@ void Aapi_socket::PrintToLog(FString toPrint)
 	}
 }
 
-void Aapi_socket::CreatePacket(UDPPacket* out, FString& data)
+void Aapi_socket::CreateDatagram(UDPDatagarm* out, FString& data)
 {
 	// Split the string on all semiciolons
 	TArray<FString> tokenizedString;
@@ -158,20 +155,28 @@ void Aapi_socket::CreatePacket(UDPPacket* out, FString& data)
 	// Store the metadata
 	out->m_commandName = tokenizedString[0];
 	
-	// Remove these first 5 entries
+	// Remove the first entry
 	tokenizedString.RemoveAt(0, 1, true);
 	
 	// Store the raw data
 	out->m_arguments = tokenizedString;
 }
 
-void Aapi_socket::ProcessPacket(UDPPacket& packet)
+void Aapi_socket::ProcessDatagram(UDPDatagarm& datagram)
 {
-	if (packet.m_commandName == "RainIntensity") {
-		if (packet.m_arguments.Num() > 0) {
-			float val = FCString::Atof(*packet.m_arguments[0]);
-			SetRainIntensity(val);
-		}
+	if (datagram.m_arguments.Num() < 0) {
+		return;
+	}
+
+	if (datagram.m_commandName == RAIN_INTENSITY_NAME) {
+		float val = FCString::Atof(*datagram.m_arguments[0]);
+		SetRainIntensity(val);
+	} else if (datagram.m_commandName == DAY_LENGTH_NAME) {
+		float val = FCString::Atof(*datagram.m_arguments[0]);
+		SetDayLength(val);
+	} else if (datagram.m_commandName == FETCH_QUEST_NAME) {
+		int32 val = FCString::Atoi(*datagram.m_arguments[0]);
+		CreateFetchQuest(val);
 	}
 }
 
@@ -193,7 +198,7 @@ bool Aapi_socket::StartUDPSender(
 
 	if (!bIsValid)
 	{
-		ScreenMsg("Rama UDP Sender>> IP address was not valid!", TheIP);
+		ScreenMsg("Sender IP address not valid: ", TheIP);
 		return false;
 	}
 
@@ -204,9 +209,7 @@ bool Aapi_socket::StartUDPSender(
 	SenderSocket->SetSendBufferSize(SendSize, SendSize);
 	SenderSocket->SetReceiveBufferSize(SendSize, SendSize);
 
-	ScreenMsg(TEXT("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
-	ScreenMsg(TEXT("Rama ****UDP**** Sender Initialized Successfully!!!"));
-	ScreenMsg(TEXT("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+	ScreenMsg(TEXT("SENDER INIT"));
 
 	return true;
 }
@@ -217,39 +220,24 @@ bool Aapi_socket::SendUDPDatagram(FString ToSend)
 {
 	if (!SenderSocket)
 	{
-		ScreenMsg("No sender socket");
 		return false;
 	}
-	//~~~~~~~~~~~~~~~~
 
 	int32 BytesSent = 0;
 
-	/*FAnyCustomData NewData;
-	NewData.Scale = FMath::FRandRange(0, 1000);
-	NewData.Count = FMath::RandRange(0, 100);
-	NewData.Color = FLinearColor(FMath::FRandRange(0, 1), FMath::FRandRange(0, 1), FMath::FRandRange(0, 1), 1);
-
-	FArrayWriter Writer;
-
-	Writer << NewData; //Serializing our custom data, thank you UE4!*/
-
 	ANSICHAR* utf8Data = TCHAR_TO_UTF8(*ToSend);
 	int32 count = ToSend.Len();
-	/*uint8* data = new uint8[count];
-	StringToBytes(utf8Data, data, count);*/
 	uint8* data = reinterpret_cast<uint8*>(utf8Data);
 
 	SenderSocket->SendTo(data, count, BytesSent, *RemoteAddr);
 
 	if (BytesSent <= 0)
 	{
-		const FString Str = "Socket is valid but the receiver received 0 bytes, make sure it is listening properly!";
-		UE_LOG(LogTemp, Error, TEXT("%s"), *Str);
-		ScreenMsg(Str);
+		ScreenMsg("Failed to send datagram of size: ", count);
 		return false;
 	}
 
-	ScreenMsg("UDP~ Send Succcess! Bytes Sent = ", BytesSent);
+	ScreenMsg("Sent bytes: ", BytesSent);
 
 	return true;
 }

@@ -7,8 +7,12 @@
 #include "Networking.h"
 #include "api_socket.generated.h"
 
+// Define constants for networking
 const int32 SEND_TO_API_PORT = 60003;
 const int32 RECEIVE_FROM_API_PORT = 60002;
+const FString RAIN_INTENSITY_NAME = "Rain Intensity";
+const FString DAY_LENGTH_NAME = "Day Length (minutes)";
+const FString FETCH_QUEST_NAME = "Create Fetch Quest";
 
 UCLASS()
 class VR_TEST_API Aapi_socket : public AActor
@@ -27,7 +31,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Called whenever this actor is being removed from a level 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+
+	// -------------------------------------
 	// Functions to modify the scene, implemented in Blueprint
+	// -------------------------------------
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetRainIntensity(float rain);
 
@@ -35,11 +45,14 @@ public:
 	void SetDayLength(float minutes);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void CreateFetchQuest(int items);
+	void CreateFetchQuest(int32 items);
 
 
-	// Structure for storing a single UDP packet from iMotions
-	struct UDPPacket {
+
+	// -------------------------------------
+	// Structures
+	// -------------------------------------
+	struct UDPDatagarm {
 		FString m_commandName;
 		TArray<FString> m_arguments;
 	};
@@ -50,14 +63,14 @@ public:
 	FSocket* ListenSocket = nullptr;
 	FUdpSocketReceiver* UDPReceiver = nullptr;
 
-	// Functions used for recieving UDP packets
+	// Functions used for recieving UDP datagrams
 	bool StartUDPReceiver(const FString& YourChosenSocketName, const FString& TheIP, const int32 ThePort);
 	void Recv(const FArrayReaderPtr& ArrayReaderPtr, const FIPv4Endpoint& EndPt);
 	
-	// Functions for processing UDP packets
+	// Functions for processing UDP datagrams
 	FString StringFromBinaryArray(TArray<uint8> BinaryArray);
-	void CreatePacket(UDPPacket* out, FString& data);
-	void ProcessPacket(UDPPacket& packet);
+	void CreateDatagram(UDPDatagarm* out, FString& data);
+	void ProcessDatagram(UDPDatagarm& datagram);
 
 
 	// -------------------------------------
@@ -67,26 +80,17 @@ public:
 	TSharedPtr<FInternetAddr> RemoteAddr;
 
 	bool SendUDPDatagram(FString ToSend);
-
-	bool StartUDPSender(
-		const FString& YourChosenSocketName,
-		const FString& TheIP,
-		const int32 ThePort
-	);
+	bool StartUDPSender(const FString& YourChosenSocketName,const FString& TheIP,const int32 ThePort);
 
 
 
 
-
-
-
-
-
-
+	// -------------------------------------
+	// Debug messages
+	// -------------------------------------
 	bool ShowOnScreenDebugMessages = true;
 	float OnScreenDebugMessageTimeout = 100.f;
 
-	//ScreenMsg
 	FORCEINLINE void ScreenMsg(const FString& Msg)
 	{
 		if (!ShowOnScreenDebugMessages) return;
@@ -102,17 +106,5 @@ public:
 		if (!ShowOnScreenDebugMessages) return;
 		GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2), false, FVector2D(2.f, 2.f));
 	}
-	void ScreenMsg(const UDPPacket& packet)
-	{
-		if (!ShowOnScreenDebugMessages) return;
-		GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, FString::Printf(TEXT("Command Name: %s"), *packet.m_commandName), false, FVector2D(2.f, 2.f));
-		for (int i = 0; i < packet.m_arguments.Num(); ++i) {
-			GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, FString::Printf(TEXT("Data[%d]: %s"), i, *packet.m_arguments[i]), false, FVector2D(2.f, 2.f));
-		}
-	}
 	void PrintToLog(FString toPrint);
-
-
-	// Called whenever this actor is being removed from a level 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 };
