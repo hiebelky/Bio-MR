@@ -1,5 +1,7 @@
 #include "ParameterControlWidget.h"
 
+#include <math.h> 
+
 #include <QString>
 #include <QLabel>
 #include <QPushButton>
@@ -15,6 +17,7 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 	m_minVal = createInfo.at(3).toDouble();
 	m_startVal = createInfo.at(4).toDouble();
 	m_maxVal = createInfo.at(5).toDouble();
+	double range = m_maxVal - m_minVal;
 
 	if (createInfo.at(2).compare("Float", Qt::CaseInsensitive) == 0) {
 		m_type = InputType::k_Float;
@@ -57,6 +60,11 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 			pTempSpinBox->setMaximum(m_maxVal);
 			pTempSpinBox->setValue(m_startVal);
 
+			// Set the single step to a power of 10
+			double exp = log10(range) - 2;
+			double singleStep = pow(10, exp);
+			pTempSpinBox->setSingleStep(singleStep);
+
 			if (!m_isButton) {
 				connect(pTempSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ParameterControlWidget::OnValueChanged);
 			}
@@ -71,6 +79,17 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 			pTempSpinBox->setMinimum((int)m_minVal);
 			pTempSpinBox->setMaximum((int)m_maxVal);
 			pTempSpinBox->setValue((int)m_startVal);
+
+			// Set the single step to a power of 10
+			double exp = log10(range) - 2;
+			int singleStep;
+			if (exp <= 0) {
+				singleStep = 1;
+			}
+			else {
+				singleStep = round(pow(10, exp));
+			}
+			pTempSpinBox->setSingleStep(singleStep);
 
 			if (!m_isButton) {
 				connect(pTempSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ParameterControlWidget::OnValueChanged);
