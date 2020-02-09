@@ -58,7 +58,7 @@ void NetworkManager::ReadGameEngineDatagrams()
 	while (m_pGameEngineListener->hasPendingDatagrams())
 	{
 		QNetworkDatagram datagram = m_pGameEngineListener->receiveDatagram();
-		ProcessImotionsDatagram(datagram);
+		ProcessGameEngineDatagram(datagram);
 	}
 }
 void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
@@ -73,7 +73,7 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 	}
 
 	// Check if the game engine has requested to register a command
-	if (splitData.at(0).compare("RegisterCommand", Qt::CaseInsensitive) != 0)
+	if (splitData.at(0).compare("RegisterCommand", Qt::CaseInsensitive) == 0)
 	{
 		// Remove the "RegisterCommand" string
 		splitData.removeFirst();
@@ -86,12 +86,12 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 		emit registerCommand(splitData);
 	}
 
-	if (splitData.at(0).compare("PickedUpItem", Qt::CaseInsensitive) != 0)
+	if (splitData.at(0).compare("PickedUpItem", Qt::CaseInsensitive) == 0)
 	{
 
 	}
 
-	if (splitData.at(0).compare("Navigating", Qt::CaseInsensitive) != 0)
+	if (splitData.at(0).compare("Navigating", Qt::CaseInsensitive) == 0)
 	{
 
 	}

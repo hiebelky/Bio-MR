@@ -21,6 +21,7 @@ class NetworkManager : public QObject {
 public:
 	NetworkManager(QObject* parent = nullptr);
 
+public slots:
 	void SendGameEngineDatagram(QString& datagram);
 	void SendIMotionsDatagram(QString& datagram);
 

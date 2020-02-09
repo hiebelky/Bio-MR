@@ -22,7 +22,7 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="triggerLayout">
       <item>
        <widget class="QLabel" name="label_4">
         <property name="font">
@@ -81,7 +81,7 @@
      </widget>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="manualControlLayout">
       <item>
        <widget class="QLabel" name="label_5">
         <property name="font">
@@ -98,48 +98,6 @@
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Rain Intensity</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="LabeledSlider" name="RainIntensitySlider" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_3"/>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Minutes per day in game</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="LabeledSlider" name="DayNightCycleSlider" native="true"/>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>Start Fetch Quest</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="text">
-            <string>Start Stressful task</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </widget>
       </item>
       <item>
@@ -172,14 +130,6 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>LabeledSlider</class>
-   <extends>QWidget</extends>
-   <header>labeledslider.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="Biomr.qrc"/>
  </resources>
