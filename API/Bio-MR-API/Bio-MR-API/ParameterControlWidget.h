@@ -24,13 +24,11 @@ private slots:
 	void ConstructDatagram();
 
 private:
+	double CalcSingleStep(double range);
+
 	QWidget* m_pParameterLabel;
 	QAbstractSpinBox* m_pSpinBox;
 
 	QString m_parameterName;
-	bool m_isButton = false;
 	InputType m_type = InputType::k_Float;
-	double m_minVal = 0;
-	double m_startVal = 0;
-	double m_maxVal = 1.;
 };

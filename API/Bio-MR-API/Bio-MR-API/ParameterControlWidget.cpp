@@ -1,6 +1,7 @@
 #include "ParameterControlWidget.h"
 
-#include <math.h> 
+#include <math.h>
+#include <algorithm>
 
 #include <QString>
 #include <QLabel>
@@ -13,11 +14,11 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 {
 	// Parse the input strings
 	m_parameterName = createInfo.at(0);
-	m_isButton = createInfo.at(1).compare("True", Qt::CaseInsensitive) == 0;
-	m_minVal = createInfo.at(3).toDouble();
-	m_startVal = createInfo.at(4).toDouble();
-	m_maxVal = createInfo.at(5).toDouble();
-	double range = m_maxVal - m_minVal;
+	bool isButton = createInfo.at(1).compare("True", Qt::CaseInsensitive) == 0;
+	double minVal = createInfo.at(3).toDouble();
+	double startVal = createInfo.at(4).toDouble();
+	double maxVal = createInfo.at(5).toDouble();
+	double range = maxVal - minVal;
 
 	if (createInfo.at(2).compare("Float", Qt::CaseInsensitive) == 0) {
 		m_type = InputType::k_Float;
@@ -33,8 +34,8 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 	setLayout(pLayout);
 
 
-	// Create the widgets accordingly
-	if (m_isButton) {
+	// Create the name either as a button, or a label
+	if (isButton) {
 		QPushButton* pTempButton = new QPushButton(m_parameterName, this);
 		connect(pTempButton, &QPushButton::pressed, this, &ParameterControlWidget::ConstructDatagram);
 
@@ -55,17 +56,15 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 	switch (m_type) {
 		case InputType::k_Float:
 		{
+			// Setup the spinbox using float parameters
 			QDoubleSpinBox* pTempSpinBox = new QDoubleSpinBox(this);
-			pTempSpinBox->setMinimum(m_minVal);
-			pTempSpinBox->setMaximum(m_maxVal);
-			pTempSpinBox->setValue(m_startVal);
+			pTempSpinBox->setMinimum(minVal);
+			pTempSpinBox->setMaximum(maxVal);
+			pTempSpinBox->setValue(startVal);
+			pTempSpinBox->setSingleStep(CalcSingleStep(range));
 
-			// Set the single step to a power of 10
-			double exp = log10(range) - 2;
-			double singleStep = pow(10, exp);
-			pTempSpinBox->setSingleStep(singleStep);
-
-			if (!m_isButton) {
+			// Only connect changes to this spinbox if it is NOT a button type
+			if (!isButton) {
 				connect(pTempSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ParameterControlWidget::OnValueChanged);
 			}
 
@@ -75,23 +74,18 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 
 		case InputType::k_Int:
 		{
+			// Setup the spinbox using integer parameters
 			QSpinBox* pTempSpinBox = new QSpinBox(this);
-			pTempSpinBox->setMinimum((int)m_minVal);
-			pTempSpinBox->setMaximum((int)m_maxVal);
-			pTempSpinBox->setValue((int)m_startVal);
+			pTempSpinBox->setMinimum((int)round(minVal));
+			pTempSpinBox->setMaximum((int)round(maxVal));
+			pTempSpinBox->setValue((int)round(startVal));
 
-			// Set the single step to a power of 10
-			double exp = log10(range) - 2;
-			int singleStep;
-			if (exp <= 0) {
-				singleStep = 1;
-			}
-			else {
-				singleStep = round(pow(10, exp));
-			}
+			// Set the single step to a power of 10, with a minimum of 1
+			int singleStep = std::max((int)round(CalcSingleStep(range)), 1);
 			pTempSpinBox->setSingleStep(singleStep);
 
-			if (!m_isButton) {
+			// Only connect changes to this spinbox if it is NOT a button type
+			if (!isButton) {
 				connect(pTempSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ParameterControlWidget::OnValueChanged);
 			}
 
@@ -103,6 +97,19 @@ ParameterControlWidget::ParameterControlWidget(QStringList createInfo, QWidget* 
 	pLayout->addWidget(m_pSpinBox);
 }
 
+double ParameterControlWidget::CalcSingleStep(double range)
+{
+	// We want roughly 100 steps in the range
+	double target = range / 100.0;
+
+	// Round to the nearest power of 10
+	double roundedPower = round(log10(target));
+
+	// Convert back to a step size
+	double singleStep = pow(10.0, roundedPower);
+	return singleStep;
+}
+
 void ParameterControlWidget::OnValueChanged(double val)
 {
 	ConstructDatagram();
@@ -110,6 +117,8 @@ void ParameterControlWidget::OnValueChanged(double val)
 
 void ParameterControlWidget::ConstructDatagram()
 {
+	// Constructs a datagram which appends parameter name and the spinbox value
+	// Ex: m_parameterName;spinBoxValue;
 	QString datagram;
 	switch (m_type) {
 		case InputType::k_Float: {

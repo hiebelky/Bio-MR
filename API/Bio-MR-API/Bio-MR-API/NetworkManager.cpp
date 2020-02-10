@@ -5,8 +5,6 @@
 #include <QString>
 
 
-
-
 NetworkManager::NetworkManager(QObject* parent) : QObject(parent)
 {
 	// Set up recieve sockets
@@ -44,8 +42,6 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 	QStringList splitData = dataString.split(";");
 
 	// Add Qiu's command parsing code
-
-	//SetRainIntensity(0.5);
 }
 
 
