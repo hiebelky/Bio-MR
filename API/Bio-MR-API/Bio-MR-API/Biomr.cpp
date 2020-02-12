@@ -24,7 +24,7 @@ void Biomr::AddParameterControlWidget(QStringList& params)
 	if (params.at(2).compare("Int", Qt::CaseInsensitive) == 0) {
 		pTempControlWidget = new ParameterControlWidget<int>(params, this);
 	}
-	else if (params.at(2).compare("Float", Qt::CaseInsensitive) == 0) {
+	else if (params.at(2).compare("Float", Qt::CaseInsensitive) == 0 || params.at(2).compare("Double", Qt::CaseInsensitive) == 0) {
 		pTempControlWidget = new ParameterControlWidget<double>(params, this);
 	}
 
