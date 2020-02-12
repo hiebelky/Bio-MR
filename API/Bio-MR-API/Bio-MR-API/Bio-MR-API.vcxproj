@@ -85,7 +85,6 @@
     <ClCompile Include="Biomr.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
-    <ClCompile Include="ParameterControlWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Biomr.h" />

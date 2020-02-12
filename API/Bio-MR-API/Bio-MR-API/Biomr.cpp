@@ -17,12 +17,27 @@ Biomr::Biomr(QWidget* parent)
 
 void Biomr::AddParameterControlWidget(QStringList& params) 
 {
-	ParameterControlWidget* pTempControlWidget = new ParameterControlWidget(params, this);
+	ParameterControlWidgetBase* pTempControlWidget = nullptr;
+
+	// Determine the type of the parameter, and create
+	// a templated widget using that type
+	if (params.at(2).compare("Int", Qt::CaseInsensitive) == 0) {
+		pTempControlWidget = new ParameterControlWidget<int>(params, this);
+	}
+	else if (params.at(2).compare("Float", Qt::CaseInsensitive) == 0) {
+		pTempControlWidget = new ParameterControlWidget<double>(params, this);
+	}
+
+	if (!pTempControlWidget) {
+		return;
+	}
 
 	// Alert the network manager when new data is ready for transmit
-	connect(pTempControlWidget, &ParameterControlWidget::DatagramReady, m_pNetworkManager, &NetworkManager::SendGameEngineDatagram);
+	connect(pTempControlWidget, &ParameterControlWidgetBase::DatagramReady, m_pNetworkManager, &NetworkManager::SendGameEngineDatagram);
 
-	// Insert at the end
+	// Add the new widget to the layout.
+	// Place it in the 2nd to last position.
+	// The last position is a resizable vertical spacer.
 	int lastIndex = ui.manualControlLayout->count() - 1;
 	ui.manualControlLayout->insertWidget(lastIndex, pTempControlWidget);
 }
