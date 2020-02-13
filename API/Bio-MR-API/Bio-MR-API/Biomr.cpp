@@ -13,6 +13,8 @@ Biomr::Biomr(QWidget* parent)
 	// Set up the network manager
 	m_pNetworkManager = new NetworkManager(this);
 	connect(m_pNetworkManager, &NetworkManager::registerCommand, this, &Biomr::AddParameterControlWidget);
+
+	// Set up the storage manager
 }
 
 

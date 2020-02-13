@@ -8,6 +8,9 @@
     <ClCompile Include="NetworkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StorageManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -56,5 +59,10 @@
     <ClInclude Include="StorageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SensorConfiguration.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 
 // Forward Declare
 class NetworkManager;
+class StorageManager;
 
 class Biomr : public QMainWindow
 {
@@ -23,4 +24,5 @@ private:
 	Ui::BiomrClass ui;
 
 	NetworkManager* m_pNetworkManager = nullptr;
+	StorageManager* m_pStorageManager = nullptr;
 };

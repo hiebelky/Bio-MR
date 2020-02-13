@@ -1,7 +1,14 @@
 #include "StorageManager.h"
 
-template <class T>
-void StorageManager::AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, int dataFieldIndexInRawData, T minVal, T maxVal)
+#include <fstream>
+#include "json.h"
+
+const char* SENSOR_CONFIGURATION_PATH = "SensorConfiguration.json";
+
+StorageManager::StorageManager()
 {
-	EventSource* pNewEventSource = new 
+	// Read the entire file
+	std::ifstream file(SENSOR_CONFIGURATION_PATH);
+	Json::Value root;
+	file >> root;
 }

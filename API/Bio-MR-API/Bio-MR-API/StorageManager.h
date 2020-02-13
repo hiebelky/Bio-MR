@@ -58,10 +58,12 @@ struct EventSource : DataField {
 };
 
 class StorageManager {
+public:
+	StorageManager();
 
 	// Add/retrieve
-	template <class T>
-	void AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, int dataFieldIndexInRawData, T minVal, T maxVal);
+	//template <class T>
+	//void AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, int dataFieldIndexInRawData, T minVal, T maxVal);
 
 private:
 	// Actually std::vector<EventSource*>
