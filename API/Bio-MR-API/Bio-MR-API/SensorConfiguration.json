@@ -1,0 +1,146 @@
+{
+	"EventSources":[
+		{
+			"Name" : "EyeTracker",
+			"SampleNames":[
+				{
+					"Name" : "EyeData",
+					"Fields" : [
+						{
+							"Name" : "EyetrackerTimestamp",
+							"Index": 0,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "GazeLeftX",
+							"Index": 1,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "GazeLeftY",
+							"Index": 2,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "GazeRightX",
+							"Index": 3,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "GazeRightY",
+							"Index": 4,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "LeftPupilDiameter",
+							"Index": 5,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "RightPupilDiameter",
+							"Index": 6,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "LeftEyeDistance",
+							"Index": 7,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "RightEyeDistance",
+							"Index": 8,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "LeftEyePositionX",
+							"Index": 9,
+							"Type" : "Float",
+							"Min": 0,
+							"Max": 1
+						},
+						{
+							"Name" : "LeftEyePositionY",
+							"Index": 10,
+							"Type" : "Float",
+							"Min": 0,
+							"Max": 1
+						},
+						{
+							"Name" : "RightEyePositionX",
+							"Index": 11,
+							"Type" : "Float",
+							"Min": 0,
+							"Max": 1
+						},
+						{
+							"Name" : "RightEyePositionY",
+							"Index": 12,
+							"Type" : "Float",
+							"Min": 0,
+							"Max": 1
+						}
+					]
+				},
+				{
+					"Name" : "GazeCalibrationResult",
+					"Fields" : 
+					[
+						{
+							"Name" : "CalibratrionPoints",
+							"Index": 0,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 2147483647
+						},
+						{
+							"Name" : "CalibratrionQuality",
+							"Index": 0,
+							"Type" : "String",
+							"Min": "",
+							"Max": ""
+						},
+						{
+							"Name" : "CalibratrionResult",
+							"Index": 0,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 100
+						},
+						{
+							"Name" : "MeanOffset",
+							"Index": 0,
+							"Type" : "Float",
+							"Min": 0,
+							"Max": 9999999
+						},
+						{
+							"Name" : "StandardDeviation",
+							"Index": 0,
+							"Type" : "Float",
+							"Min": 0,
+							"Max": 9999999
+						}
+					]
+				}
+			]
+		}
+	]
+}
