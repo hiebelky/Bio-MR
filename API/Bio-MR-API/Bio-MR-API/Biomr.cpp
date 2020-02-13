@@ -2,6 +2,7 @@
 
 #include "NetworkManager.h"
 #include "ParameterControlWidget.h"
+#include "StorageManager.h"
 
 
 Biomr::Biomr(QWidget* parent)
