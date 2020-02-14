@@ -42,20 +42,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Set Rain Intensity to 0.5 if HR &gt; 100 </string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="text">
-         <string>Add Trigger</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="verticalSpacer_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -123,7 +109,7 @@
      <x>0</x>
      <y>0</y>
      <width>601</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

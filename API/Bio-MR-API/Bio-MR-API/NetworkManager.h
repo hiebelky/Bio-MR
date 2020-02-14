@@ -2,6 +2,8 @@
 
 #include <QObject>
 
+#include "Types.h"
+
 // Forward declare Qt classes
 class QNetworkDatagram;
 class QUdpSocket;
@@ -15,17 +17,6 @@ const int SEND_TO_GAME_ENGINE_PORT = 60002;
 const int RECEIVE_FROM_GAME_ENGINE_PORT = 60003;
 
 
-
-struct IMotionsEvent {
-	QString m_seqNumber;
-	QString m_eventSource;
-	QString m_sampleName;
-	QString m_timestamp;
-	QString m_mediaTime;
-	QStringList m_rawData;
-};
-
-
 class NetworkManager : public QObject {
 	Q_OBJECT
 
@@ -37,7 +28,7 @@ public slots:
 	void SendIMotionsDatagram(QString& datagram);
 
 signals:
-	void registerCommand(QStringList& newCommand);
+	void registerGameEngineCommand(GameEngineRegisterCommandDatagram& newCommand);
 
 private:
 	void ReadImotionsDatagrams();

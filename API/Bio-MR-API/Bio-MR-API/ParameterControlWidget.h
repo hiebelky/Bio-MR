@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <algorithm>
+#include "Types.h"
 
 #include <QWidget>
 #include <QString>
@@ -18,10 +19,10 @@
 class ParameterControlWidgetBase : public QWidget {
 	Q_OBJECT
 public:
-	ParameterControlWidgetBase(QStringList createInfo, QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags()) : QWidget(parent, f) {
+	ParameterControlWidgetBase(GameEngineRegisterCommandDatagram& createInfo, QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags()) : QWidget(parent, f) {
 		// Parse the common input strings
-		m_parameterName = createInfo.at(0);
-		bool isButton = createInfo.at(1).compare("True", Qt::CaseInsensitive) == 0;
+		m_parameterName = createInfo.m_parameterName;
+		bool isButton = createInfo.m_isButton.compare("True", Qt::CaseInsensitive) == 0;
 
 		// Create the horizontal layout for this widget
 		m_pLayout = new QHBoxLayout(this);
@@ -76,14 +77,14 @@ class ParameterControlWidget : public ParameterControlWidgetBase
 template <>
 class ParameterControlWidget <int> : public ParameterControlWidgetBase {
 public:
-	ParameterControlWidget(QStringList createInfo, QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags())
+	ParameterControlWidget(GameEngineRegisterCommandDatagram& createInfo, QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags())
 		: ParameterControlWidgetBase(createInfo, parent, f)
 	{
 		// Parse the input strings
-		bool isButton = createInfo.at(1).compare("True", Qt::CaseInsensitive) == 0;
-		int minVal = createInfo.at(3).toInt();
-		int startVal = createInfo.at(4).toInt();
-		int maxVal = createInfo.at(5).toInt();
+		bool isButton = createInfo.m_isButton.compare("True", Qt::CaseInsensitive) == 0;
+		int minVal = createInfo.m_minVal.toInt();
+		int startVal = createInfo.m_startVal.toInt();
+		int maxVal = createInfo.m_maxVal.toInt();
 		int range = maxVal - minVal;
 
 		// Setup the spinbox range and values
@@ -129,14 +130,14 @@ private:
 template <>
 class ParameterControlWidget <double> : public ParameterControlWidgetBase {
 public:
-	ParameterControlWidget(QStringList createInfo, QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags())
+	ParameterControlWidget(GameEngineRegisterCommandDatagram& createInfo, QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags())
 		: ParameterControlWidgetBase(createInfo, parent, f)
 	{
 		// Parse the input strings
-		bool isButton = createInfo.at(1).compare("True", Qt::CaseInsensitive) == 0;
-		double minVal = createInfo.at(3).toDouble();
-		double startVal = createInfo.at(4).toDouble();
-		double maxVal = createInfo.at(5).toDouble();
+		bool isButton = createInfo.m_isButton.compare("True", Qt::CaseInsensitive) == 0;
+		double minVal = createInfo.m_minVal.toDouble();
+		double startVal = createInfo.m_startVal.toDouble();
+		double maxVal = createInfo.m_maxVal.toDouble();
 		double range = maxVal - minVal;
 
 		// Setup the spinbox range and values
