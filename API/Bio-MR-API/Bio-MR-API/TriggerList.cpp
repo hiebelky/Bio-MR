@@ -12,7 +12,7 @@ TriggerList::TriggerList(QWidget* parent) : QWidget(parent)
 	// Creaate the main layout
 	QVBoxLayout* pMainLayout = new QVBoxLayout();
 	setLayout(pMainLayout);
-	
+
 	// Add the list of view items
 	m_pTriggerView = new QListView(this);
 	pMainLayout->addWidget(m_pTriggerView);
@@ -20,7 +20,7 @@ TriggerList::TriggerList(QWidget* parent) : QWidget(parent)
 	// Create the item model
 	m_pTriggerModel = new QStandardItemModel(0, 1, this);
 	m_pTriggerView->setModel(m_pTriggerModel);
-	m_pTriggerModel->appendRow(new QStandardItem("Test"));
+	m_pTriggerModel->appendRow(new QStandardItem("Set Rain Intensity to 0.5 if HR >= 80"));
 
 	// Create the add/remove buttons
 	QWidget* pAddRemoveRow = new QWidget(this);
@@ -32,11 +32,12 @@ TriggerList::TriggerList(QWidget* parent) : QWidget(parent)
 	pAddRemoveRow->setLayout(pAddRemoveRowLayout);
 	pAddRemoveRowLayout->addWidget(pAddButton);
 	pAddRemoveRowLayout->addWidget(pRemoveButton);
-
-	// Add the buttons to the layout
 	pMainLayout->addWidget(pAddRemoveRow);
 
-	for (QModelIndex& index : m_pTriggerView->selectionModel()->selectedIndexes()) {
-		m_pTriggerModel->removeRow(index.row());
-	}
+	// Set up button actions
+	connect(pRemoveButton, &QPushButton::pressed, this, [&] {
+		for (QModelIndex& index : m_pTriggerView->selectionModel()->selectedIndexes()) {
+			m_pTriggerModel->removeRow(index.row());
+		}
+	});
 }
