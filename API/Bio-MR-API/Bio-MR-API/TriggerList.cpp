@@ -20,7 +20,8 @@ TriggerList::TriggerList(QWidget* parent) : QWidget(parent)
 	// Create the item model
 	m_pTriggerModel = new QStandardItemModel(0, 1, this);
 	m_pTriggerView->setModel(m_pTriggerModel);
-	m_pTriggerModel->appendRow(new QStandardItem("Set Rain Intensity to 0.5 if HR >= 80"));
+	QStandardItem* testRow = new TriggerItem<int>("Shimmer", "GSR", "Heart Rate", 0, ComparisonType::k_greaterEqual, 80, "Rain Intensity", "0.50");
+	m_pTriggerModel->appendRow(testRow);
 
 	// Create the add/remove buttons
 	QWidget* pAddRemoveRow = new QWidget(this);
