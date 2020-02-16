@@ -13,6 +13,7 @@ class QSpinBox;
 class QLabel;
 class QComboBox;
 class QGridLayout;
+class TriggerItem;
 
 class TriggerList : public QWidget
 {
@@ -26,8 +27,9 @@ private:
 	void UpdateGameEngineParameterValue(int index);
 	void UpdatePreviewText();
 
+	TriggerItem* CreateNewTriggerItem();
+
 	StorageManager* m_pStorageManager = nullptr;
-	QGridLayout* m_pMainLayout = nullptr;
 	QListView* m_pTriggerView = nullptr;
 	QStandardItemModel* m_pTriggerModel = nullptr;
 
