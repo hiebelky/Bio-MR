@@ -71,14 +71,19 @@ void Biomr::HandleAutomaticTriggers(IMotionsDatagram& datagram)
 		if (datagram.m_rawData.size() <= it->m_fieldIndex) {
 			continue;
 		}
-		
-		QString value = datagram.m_rawData[it->m_fieldIndex];
 
-		bool isNumber;
-		it->m_comparisonValue.toDouble(&isNumber);
+		bool isCompareValueNumber;
+		it->m_comparisonValue.toDouble(&isCompareValueNumber);
+
+		bool isDataValueNumber;
+		datagram.m_rawData[it->m_fieldIndex].toDouble(&isDataValueNumber);
+
+		if (isDataValueNumber != isCompareValueNumber) {
+			continue;
+		}
 
 		bool shouldTrigger = false;
-		if (isNumber) {
+		if (isDataValueNumber) {
 			double dataValue = datagram.m_rawData[it->m_fieldIndex].toDouble();
 			double compareValue = it->m_comparisonValue.toDouble();
 
