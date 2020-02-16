@@ -3,7 +3,7 @@
 #include "NetworkManager.h"
 #include "ParameterControlWidget.h"
 #include "StorageManager.h"
-
+#include "TriggerList.h"
 
 Biomr::Biomr(QWidget* parent)
 	: QMainWindow(parent)
@@ -12,22 +12,28 @@ Biomr::Biomr(QWidget* parent)
 
 	// Set up the network manager
 	m_pNetworkManager = new NetworkManager(this);
-	connect(m_pNetworkManager, &NetworkManager::registerCommand, this, &Biomr::AddParameterControlWidget);
+	connect(m_pNetworkManager, &NetworkManager::registerGameEngineCommand, this, &Biomr::AddParameterControlWidget);
 
 	// Set up the storage manager
+	m_pStorageManager = new StorageManager();
+
+	// Set up the automatic trigger reader
+	TriggerList* pTriggerList = new TriggerList(this);
+	int lastIndex = ui.triggerLayout->count() - 1;
+	ui.triggerLayout->insertWidget(lastIndex, pTriggerList);
 }
 
 
-void Biomr::AddParameterControlWidget(QStringList& params) 
+void Biomr::AddParameterControlWidget(GameEngineRegisterCommandDatagram& params)
 {
 	ParameterControlWidgetBase* pTempControlWidget = nullptr;
 
 	// Determine the type of the parameter, and create
 	// a templated widget using that type
-	if (params.at(2).compare("Int", Qt::CaseInsensitive) == 0) {
+	if (params.m_type.compare("Int", Qt::CaseInsensitive) == 0) {
 		pTempControlWidget = new ParameterControlWidget<int>(params, this);
 	}
-	else if (params.at(2).compare("Float", Qt::CaseInsensitive) == 0 || params.at(2).compare("Double", Qt::CaseInsensitive) == 0) {
+	else if (params.m_type.compare("Float", Qt::CaseInsensitive) == 0 || params.m_type.compare("Double", Qt::CaseInsensitive) == 0) {
 		pTempControlWidget = new ParameterControlWidget<double>(params, this);
 	}
 
@@ -44,16 +50,3 @@ void Biomr::AddParameterControlWidget(QStringList& params)
 	int lastIndex = ui.manualControlLayout->count() - 1;
 	ui.manualControlLayout->insertWidget(lastIndex, pTempControlWidget);
 }
-
-void Biomr::SetRainIntensity(double val)
-{
-	QString command = QString("RainIntensity;%1;").arg(val);
-	m_pNetworkManager->SendGameEngineDatagram(command);
-}
-
-void Biomr::SetDayNightCycle(double val)
-{
-	QString command = QString("DayLength;%1;").arg(val);
-	m_pNetworkManager->SendGameEngineDatagram(command);
-}
-

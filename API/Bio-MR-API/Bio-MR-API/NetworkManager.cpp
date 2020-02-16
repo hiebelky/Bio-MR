@@ -79,7 +79,9 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 			return;
 		}
 
-		emit registerCommand(splitData);
+		GameEngineRegisterCommandDatagram command = { splitData[0], splitData[1], splitData[2], splitData[3], splitData[4], splitData[5] };
+
+		emit registerGameEngineCommand(command);
 	}
 
 	if (splitData.at(0).compare("PickedUpItem", Qt::CaseInsensitive) == 0)

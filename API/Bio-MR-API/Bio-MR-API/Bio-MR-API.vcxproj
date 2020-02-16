@@ -88,6 +88,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="StorageManager.cpp" />
+    <ClCompile Include="TriggerList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Biomr.h" />
@@ -106,6 +107,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StorageManager.h" />
+    <QtMoc Include="TriggerList.h" />
+    <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SensorConfiguration.json" />
