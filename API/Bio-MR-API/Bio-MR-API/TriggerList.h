@@ -35,7 +35,7 @@ public:
 		m_eventSource(eventSource), m_sampleName(sampleName), m_fieldName(fieldName), m_fieldIndex(fieldIndex),
 		m_comparisionFunction(compareFunc), m_comparisonValue(compareValue), m_parameterName(parameterName), m_parameterValue(parameterValue)
 	{
-		QString objectText = QString("If %1::%2::%3 %4 %5, set %6 to %7")
+		QString objectText = QString("If %1::%2::%3 %4 %5, set %6 to %7.")
 			.arg(m_eventSource)
 			.arg(m_sampleName)
 			.arg(m_fieldName)

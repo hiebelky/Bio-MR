@@ -34,7 +34,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Triggers</string>
+         <string>Automatic Triggers</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

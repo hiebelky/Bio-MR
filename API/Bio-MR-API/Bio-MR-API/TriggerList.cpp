@@ -6,6 +6,8 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QDialog>
+#include <QComboBox>
 
 TriggerList::TriggerList(QWidget* parent) : QWidget(parent)
 {
@@ -40,5 +42,23 @@ TriggerList::TriggerList(QWidget* parent) : QWidget(parent)
 		for (QModelIndex& index : m_pTriggerView->selectionModel()->selectedIndexes()) {
 			m_pTriggerModel->removeRow(index.row());
 		}
+	});
+
+	connect(pAddButton, &QPushButton::pressed, this, [&] {
+		// Create a modal widget
+		QWidget* pAddWindow = new QWidget();
+
+		QVBoxLayout* pMainLayout = new QVBoxLayout(pAddWindow);
+		pAddWindow->setLayout(pMainLayout);
+
+		QComboBox* pComboBox = new QComboBox(pAddWindow);
+		QStringList x;
+		x.append("Val1");
+		x.append("Val2");
+		x.append("Val3");
+		pComboBox->addItems(x);
+		pMainLayout->addWidget(pComboBox);
+
+		pAddWindow->show();
 	});
 }
