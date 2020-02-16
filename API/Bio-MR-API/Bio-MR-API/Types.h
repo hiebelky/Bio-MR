@@ -25,3 +25,26 @@ struct GameEngineRegisterCommandDatagram {
 	QString m_startVal;
 	QString m_maxVal;
 };
+
+enum class ComparisonType {
+	k_less,
+	k_lessEqual,
+	k_equal,
+	k_greaterEqual,
+	k_greater,
+	k_count
+};
+
+struct TriggerDescription {
+	// Sensor Values
+	QString m_eventSource;
+	QString m_sampleName;
+	int m_fieldIndex;
+
+	ComparisonType m_comparisionFunction;
+	QString m_comparisonValue;
+
+	// Game Engine Values
+	QString m_parameterName;
+	QString m_parameterValue;
+};

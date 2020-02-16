@@ -69,14 +69,17 @@ public:
 	//template <class T>
 	//void AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, int dataFieldIndexInRawData, T minVal, T maxVal);
 	void AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter);
-
 	std::vector<GameEngineRegisterCommandDatagram>& GetGameEngineParameters();
+
+	void AddTrigger(TriggerDescription* desc);
+	void RemoveTrigger(TriggerDescription* desc);
+	std::vector<TriggerDescription*>& GetAllTriggers();
 
 signals:
 	void NewGameEngineParameter();
 
 private:
-	// Actually std::vector<EventSource*>
+	std::vector<TriggerDescription*> m_triggers;
 	std::vector<GameEngineRegisterCommandDatagram> m_gameEngineParameters;
 	std::set<EventSource> m_eventSources;
 };

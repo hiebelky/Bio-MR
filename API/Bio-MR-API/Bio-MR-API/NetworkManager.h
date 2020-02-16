@@ -29,6 +29,7 @@ public slots:
 
 signals:
 	void registerGameEngineCommand(GameEngineRegisterCommandDatagram& newCommand);
+	void imotionsDataRecieved(IMotionsDatagram& newDatagram);
 
 private:
 	void ReadImotionsDatagrams();

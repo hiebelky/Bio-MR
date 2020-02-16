@@ -50,32 +50,14 @@ private:
 	QLabel* m_pPreviewTrigger = nullptr;
 };
 
-enum class ComparisonType
-{
-	k_less,
-	k_lessEqual,
-	k_equal,
-	k_greaterEqual,
-	k_greater,
-	k_count
-};
 
 class TriggerItem : public QStandardItem
 {
 public:
-	TriggerItem(QString eventSource, QString sampleName, int fieldIndex, ComparisonType compareFunc, QString compareValue, QString parameterName, QString parameterValue);
+	TriggerItem(TriggerDescription* desc);
+	~TriggerItem();
 
+	inline TriggerDescription* GetTriggerDescription() { return m_pDescription; }
 private:
-
-	// Sensor Values
-	QString m_eventSource;
-	QString m_sampleName;
-	int m_fieldIndex;
-
-	ComparisonType m_comparisionFunction;
-	QString m_comparisonValue;
-	
-	// Game Engine Values
-	QString m_parameterName;
-	QString m_parameterValue;
+	TriggerDescription* m_pDescription = nullptr;
 };

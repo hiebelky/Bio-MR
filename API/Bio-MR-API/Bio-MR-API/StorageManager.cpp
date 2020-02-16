@@ -65,3 +65,19 @@ std::vector<GameEngineRegisterCommandDatagram>& StorageManager::GetGameEnginePar
 {
 	return m_gameEngineParameters;
 }
+
+
+std::vector<TriggerDescription*>& StorageManager::GetAllTriggers()
+{
+	return m_triggers;
+}
+
+void StorageManager::RemoveTrigger(TriggerDescription* desc)
+{
+	auto elem = std::find(m_triggers.begin(), m_triggers.end(), desc);
+	m_triggers.erase(elem);
+}
+void StorageManager::AddTrigger(TriggerDescription* desc)
+{
+	m_triggers.push_back(desc);
+}

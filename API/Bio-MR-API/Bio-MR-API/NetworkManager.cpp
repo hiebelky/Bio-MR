@@ -41,7 +41,26 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 	QString dataString = QString::fromUtf8(rawData);
 	QStringList splitData = dataString.split(";");
 
-	// Add Qiu's command parsing code
+	// Must have length 5
+	if (splitData.size() < 5) {
+		return;
+	}
+
+	IMotionsDatagram result;
+	result.m_seqNumber = splitData[0];
+	result.m_eventSource = splitData[1];
+	result.m_sampleName = splitData[2];
+	result.m_timestamp = splitData[3];
+	result.m_mediaTime = splitData[4];
+
+	splitData.removeAt(0);
+	splitData.removeAt(0);
+	splitData.removeAt(0);
+	splitData.removeAt(0);
+	splitData.removeAt(0);
+	result.m_rawData = splitData;
+
+	emit imotionsDataRecieved(result);
 }
 
 
@@ -86,12 +105,12 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 
 	if (splitData.at(0).compare("PickedUpItem", Qt::CaseInsensitive) == 0)
 	{
-
+		// TODO: Forward this to imotions
 	}
 
 	if (splitData.at(0).compare("Navigating", Qt::CaseInsensitive) == 0)
 	{
-
+		// TODO: Forward this to imotions
 	}
 }
 

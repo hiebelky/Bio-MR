@@ -55,7 +55,10 @@ TriggerList::TriggerList(StorageManager* sm, QWidget* parent) : QWidget(parent),
 
 	// Set up button actions
 	connect(pRemoveButton, &QPushButton::pressed, this, [&] {
-		for (QModelIndex& index : m_pTriggerView->selectionModel()->selectedIndexes()) {
+		for (QModelIndex& index : m_pTriggerView->selectionModel()->selectedIndexes()) { 
+			QStandardItem* pRemovedItem = m_pTriggerModel->itemFromIndex(index);
+			TriggerItem* pRemovedTriggerItem = static_cast<TriggerItem*>(pRemovedItem);
+			m_pStorageManager->RemoveTrigger(pRemovedTriggerItem->GetTriggerDescription());
 			m_pTriggerModel->removeRow(index.row());
 		}
 	});
@@ -139,7 +142,9 @@ void TriggerList::SetUpTriggerWindow() {
 	QDialogButtonBox* pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
 	connect(pButtonBox->button(QDialogButtonBox::Ok), &QPushButton::pressed, this, [&] {
-		m_pTriggerModel->appendRow(CreateNewTriggerItem());
+		TriggerItem* pItem = CreateNewTriggerItem();
+		m_pTriggerModel->appendRow(pItem);
+		m_pStorageManager->AddTrigger(pItem->GetTriggerDescription());
 		m_pAddTriggerWindow->hide();
 	});
 	connect(pButtonBox->button(QDialogButtonBox::Cancel), &QPushButton::pressed, this, [&] {
@@ -233,18 +238,21 @@ void TriggerList::UpdateGameEngineParameterValue(int index)
 
 
 TriggerItem* TriggerList::CreateNewTriggerItem() {
+	TriggerDescription* pDescription = new TriggerDescription();
+
 	// Sensor input
-	QString eventSource = m_pEventSourceInput->text();
-	QString sampleName = m_pSampleNameInput->text();
-	int eventIndex = m_pFieldIndexInput->value();
-	ComparisonType compFunc = (ComparisonType)m_pComparisonFunctionInput->currentIndex();
-	QString compVal = m_pComparisonValueInput->text();
+	pDescription->m_eventSource = m_pEventSourceInput->text();
+	pDescription->m_sampleName = m_pSampleNameInput->text();
+	pDescription->m_fieldIndex = m_pFieldIndexInput->value();
 
-	// Command
-	QString paramName = m_pParameterNameInput->currentText();
-	QString paramValue = QString("%1").arg(m_pParameterValueInput->value());
+	pDescription->m_comparisionFunction = (ComparisonType)m_pComparisonFunctionInput->currentIndex();
+	pDescription->m_comparisonValue = m_pComparisonValueInput->text();
 
-	return new TriggerItem(eventSource, sampleName, eventIndex, compFunc, compVal, paramName, paramValue);
+	// Game engine input
+	pDescription->m_parameterName = m_pParameterNameInput->currentText();
+	pDescription->m_parameterValue = QString("%1").arg(m_pParameterValueInput->value());
+
+	return new TriggerItem(pDescription);
 }
 
 void TriggerList::UpdatePreviewText()
@@ -255,16 +263,20 @@ void TriggerList::UpdatePreviewText()
 }
 
 
-TriggerItem::TriggerItem(QString eventSource, QString sampleName, int fieldIndex, ComparisonType compareFunc, QString compareValue, QString parameterName, QString parameterValue)
-	: QStandardItem(), m_eventSource(eventSource), m_sampleName(sampleName), m_fieldIndex(fieldIndex), m_comparisionFunction(compareFunc), m_comparisonValue(compareValue), m_parameterName(parameterName), m_parameterValue(parameterValue)
+TriggerItem::TriggerItem(TriggerDescription* desc)
+	: QStandardItem(), m_pDescription(desc)
 {
 	QString objectText = QString("If %1::%2[%3] %4 %5, set %6 to %7")
-		.arg(m_eventSource)
-		.arg(m_sampleName)
-		.arg(fieldIndex)
-		.arg(ComparisonFucntionToQString(m_comparisionFunction))
-		.arg(m_comparisonValue)
-		.arg(m_parameterName)
-		.arg(m_parameterValue);
+		.arg(desc->m_eventSource)
+		.arg(desc->m_sampleName)
+		.arg(desc->m_fieldIndex)
+		.arg(ComparisonFucntionToQString(desc->m_comparisionFunction))
+		.arg(desc->m_comparisonValue)
+		.arg(desc->m_parameterName)
+		.arg(desc->m_parameterValue);
 	setText(objectText);
+}
+
+TriggerItem::~TriggerItem() {
+	delete m_pDescription;
 }

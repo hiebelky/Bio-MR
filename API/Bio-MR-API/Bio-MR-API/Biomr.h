@@ -18,6 +18,7 @@ public:
 
 public slots:
 	void AddParameterControlWidget(GameEngineRegisterCommandDatagram& params);
+	void HandleAutomaticTriggers(IMotionsDatagram& datagram);
 
 private:
 	Ui::BiomrClass ui;
