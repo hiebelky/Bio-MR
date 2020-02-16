@@ -15,6 +15,7 @@ Biomr::Biomr(QWidget* parent)
 	connect(m_pNetworkManager, &NetworkManager::registerGameEngineCommand, this, &Biomr::AddParameterControlWidget);
 
 	// Set up the storage manager
+	// Currenty unused
 	m_pStorageManager = new StorageManager();
 
 	// Set up the automatic trigger reader

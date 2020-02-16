@@ -5,6 +5,10 @@
 // Forward declare
 class QListView;
 class QStandardItemModel;
+class QLineEdit;
+class QSpinBox;
+class QComboBox;
+class QAbstractSpinBox;
 
 class TriggerList : public QWidget
 {
@@ -12,10 +16,25 @@ class TriggerList : public QWidget
 public:
 	TriggerList(QWidget* parent = nullptr);
 private:
+	void SetUpTriggerWindow();
+
+
 	QListView* m_pTriggerView = nullptr;
 	QStandardItemModel* m_pTriggerModel = nullptr;
-};
 
+	QWidget* m_pAddTriggerWindow = nullptr;
+
+	// Sensor input
+	QLineEdit* m_pEventSourceInput = nullptr;
+	QLineEdit* m_pSampleNameInput = nullptr;
+	QSpinBox* m_pFieldIndexInput = nullptr;
+	QComboBox* m_pComparisonFunctionInput = nullptr;
+	QLineEdit* m_pComparisonValueInput = nullptr;
+
+	// Command to game engine input
+	QComboBox* m_pParameterNameInput = nullptr;
+	QAbstractSpinBox* m_pParameterValueInput = nullptr;
+};
 
 enum class ComparisonType
 {
@@ -23,7 +42,8 @@ enum class ComparisonType
 	k_lessEqual,
 	k_equal,
 	k_greaterEqual,
-	k_greater
+	k_greater,
+	k_count
 };
 
 template <class T>
@@ -35,7 +55,7 @@ public:
 		m_eventSource(eventSource), m_sampleName(sampleName), m_fieldName(fieldName), m_fieldIndex(fieldIndex),
 		m_comparisionFunction(compareFunc), m_comparisonValue(compareValue), m_parameterName(parameterName), m_parameterValue(parameterValue)
 	{
-		QString objectText = QString("If %1::%2::%3 %4 %5, set %6 to %7.")
+		QString objectText = QString("If %1::%2::%3 %4 %5, set %6 to %7")
 			.arg(m_eventSource)
 			.arg(m_sampleName)
 			.arg(m_fieldName)
@@ -45,18 +65,8 @@ public:
 			.arg(m_parameterValue);
 			setText(objectText);
 	}
-private:
-	QString ComparisonFucntionToQString(ComparisonType type) {
-		switch (type) {
-		case ComparisonType::k_less: return "<";
-		case ComparisonType::k_lessEqual: return "<=";
-		case ComparisonType::k_equal: return "==";
-		case ComparisonType::k_greaterEqual: return ">=";
-		case ComparisonType::k_greater: return ">";
-		default: return "";
-		}
-	}
 
+private:
 	QString ComparisonValueToQString(T value) {
 		if (std::is_same<T, int>::value) {
 			return QString("%1").arg((int)value);
@@ -67,7 +77,6 @@ private:
 			return QString(value);
 		}
 	}
-
 
 	// Sensor Values
 	QString m_eventSource;
