@@ -54,7 +54,7 @@ TriggerList::TriggerList(StorageManager* sm, QWidget* parent) : QWidget(parent),
 	pMainLayout->addWidget(pAddRemoveRow);
 
 	// Set up button actions
-	connect(pRemoveButton, &QPushButton::pressed, this, [&] {
+	connect(pRemoveButton, &QPushButton::clicked, this, [&] {
 		for (QModelIndex& index : m_pTriggerView->selectionModel()->selectedIndexes()) { 
 			QStandardItem* pRemovedItem = m_pTriggerModel->itemFromIndex(index);
 			TriggerItem* pRemovedTriggerItem = static_cast<TriggerItem*>(pRemovedItem);
@@ -141,7 +141,7 @@ void TriggerList::SetUpTriggerWindow() {
 	// Create the buttons
 	QDialogButtonBox* pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-	connect(pButtonBox->button(QDialogButtonBox::Ok), &QPushButton::pressed, this, [&] {
+	connect(pButtonBox->button(QDialogButtonBox::Ok), &QPushButton::clicked, this, [&] {
 		TriggerItem* pItem = CreateNewTriggerItem();
 		m_pTriggerModel->appendRow(pItem);
 		m_pStorageManager->AddTrigger(pItem->GetTriggerDescription());
