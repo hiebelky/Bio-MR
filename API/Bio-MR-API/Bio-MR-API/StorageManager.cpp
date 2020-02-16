@@ -5,7 +5,7 @@
 
 const char* SENSOR_CONFIGURATION_PATH = "SensorConfiguration.json";
 
-StorageManager::StorageManager()
+StorageManager::StorageManager() : QObject()
 {
 	// Read the entire file
 	std::ifstream file(SENSOR_CONFIGURATION_PATH);
@@ -53,4 +53,15 @@ StorageManager::StorageManager()
 
 
 	}
+}
+
+void StorageManager::AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter)
+{
+	m_gameEngineParameters.push_back(parameter);
+	emit NewGameEngineParameter();
+}
+
+std::vector<GameEngineRegisterCommandDatagram>& StorageManager::GetGameEngineParameters()
+{
+	return m_gameEngineParameters;
 }

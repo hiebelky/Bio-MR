@@ -2,6 +2,8 @@
 #include <QWidget>
 #include <QStandardItem>
 
+#include "StorageManager.h"
+
 // Forward declare
 class QListView;
 class QStandardItemModel;
@@ -9,16 +11,21 @@ class QLineEdit;
 class QSpinBox;
 class QComboBox;
 class QAbstractSpinBox;
+class QGridLayout;
 
 class TriggerList : public QWidget
 {
 	Q_OBJECT
 public:
-	TriggerList(QWidget* parent = nullptr);
+	TriggerList(StorageManager* sm, QWidget* parent = nullptr);
 private:
 	void SetUpTriggerWindow();
 
+	void UpdateGameEngineParameterList();
+	void UpdateGameEngineParameterValue(int index);
 
+	StorageManager* m_pStorageManager = nullptr;
+	QGridLayout* m_pMainLayout = nullptr;
 	QListView* m_pTriggerView = nullptr;
 	QStandardItemModel* m_pTriggerModel = nullptr;
 
@@ -71,8 +78,8 @@ private:
 		if (std::is_same<T, int>::value) {
 			return QString("%1").arg((int)value);
 		}
-		else if (std::is_same<T, float>::value) {
-			return QString("%1").arg((float)value);
+		else if (std::is_same<T, float>::value || std::is_same<T, double>::value) {
+			return QString("%1").arg((double)value);
 		} else if (std::is_same<T, QString>::value) {
 			return QString(value);
 		}

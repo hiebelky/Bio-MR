@@ -15,11 +15,10 @@ Biomr::Biomr(QWidget* parent)
 	connect(m_pNetworkManager, &NetworkManager::registerGameEngineCommand, this, &Biomr::AddParameterControlWidget);
 
 	// Set up the storage manager
-	// Currenty unused
 	m_pStorageManager = new StorageManager();
 
 	// Set up the automatic trigger reader
-	TriggerList* pTriggerList = new TriggerList(this);
+	TriggerList* pTriggerList = new TriggerList(m_pStorageManager, this);
 	int lastIndex = ui.triggerLayout->count() - 1;
 	ui.triggerLayout->insertWidget(lastIndex, pTriggerList);
 }
@@ -28,6 +27,8 @@ Biomr::Biomr(QWidget* parent)
 void Biomr::AddParameterControlWidget(GameEngineRegisterCommandDatagram& params)
 {
 	ParameterControlWidgetBase* pTempControlWidget = nullptr;
+
+	m_pStorageManager->AddGameEngineParameter(params);
 
 	// Determine the type of the parameter, and create
 	// a templated widget using that type

@@ -1,9 +1,12 @@
 #pragma once
 
+#include "Types.h"
+
 #include <vector>
 #include <set>
 
 #include <QString>
+#include <QObject>
 
 struct DataField {
 	QString m_name;
@@ -34,18 +37,18 @@ struct std::less<DataField*>
 };
 
 template <class T>
-struct GameEngineParameter : DataField {
-	T minVal;
-	T startVal;
-	T maxVal;
-	bool isButton;
+struct GameEngineParameterSet : DataField {
+	T m_minVal;
+	T m_startVal;
+	T m_maxVal;
+	bool m_isButton;
 };
 
 template <class T>
 struct SensorDataField : DataField {
-	int indexInRawString;
-	T minVal;
-	T maxVal;
+	int m_indexInRawString;
+	T m_minVal;
+	T m_maxVal;
 };
 
 struct SampleName : DataField {
@@ -57,16 +60,23 @@ struct EventSource : DataField {
 	std::set<SampleName> m_sampleNames;
 };
 
-class StorageManager {
+class StorageManager : public QObject{
+	Q_OBJECT
 public:
 	StorageManager();
 
 	// Add/retrieve
 	//template <class T>
 	//void AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, int dataFieldIndexInRawData, T minVal, T maxVal);
+	void AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter);
+
+	std::vector<GameEngineRegisterCommandDatagram>& GetGameEngineParameters();
+
+signals:
+	void NewGameEngineParameter();
 
 private:
 	// Actually std::vector<EventSource*>
-	std::set<DataField*> m_gameEngineParameters;
+	std::vector<GameEngineRegisterCommandDatagram> m_gameEngineParameters;
 	std::set<EventSource> m_eventSources;
 };

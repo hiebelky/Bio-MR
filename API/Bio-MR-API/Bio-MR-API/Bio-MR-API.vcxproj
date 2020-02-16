@@ -106,7 +106,7 @@
     <QtMoc Include="ParameterControlWidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StorageManager.h" />
+    <QtMoc Include="StorageManager.h" />
     <QtMoc Include="TriggerList.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
