@@ -7,10 +7,11 @@
 // Forward declare
 class QListView;
 class QStandardItemModel;
+class QDoubleSpinBox;
 class QLineEdit;
 class QSpinBox;
+class QLabel;
 class QComboBox;
-class QAbstractSpinBox;
 class QGridLayout;
 
 class TriggerList : public QWidget
@@ -23,6 +24,7 @@ private:
 
 	void UpdateGameEngineParameterList();
 	void UpdateGameEngineParameterValue(int index);
+	void UpdatePreviewText();
 
 	StorageManager* m_pStorageManager = nullptr;
 	QGridLayout* m_pMainLayout = nullptr;
@@ -40,7 +42,10 @@ private:
 
 	// Command to game engine input
 	QComboBox* m_pParameterNameInput = nullptr;
-	QAbstractSpinBox* m_pParameterValueInput = nullptr;
+	QDoubleSpinBox* m_pParameterValueInput = nullptr;
+
+	// Preview
+	QLabel* m_pPreviewTrigger = nullptr;
 };
 
 enum class ComparisonType
@@ -53,46 +58,20 @@ enum class ComparisonType
 	k_count
 };
 
-template <class T>
 class TriggerItem : public QStandardItem
 {
 public:
-	TriggerItem(QString eventSource, QString sampleName, QString fieldName, int fieldIndex,
-		ComparisonType compareFunc, T compareValue, QString parameterName, QString parameterValue) : QStandardItem(),
-		m_eventSource(eventSource), m_sampleName(sampleName), m_fieldName(fieldName), m_fieldIndex(fieldIndex),
-		m_comparisionFunction(compareFunc), m_comparisonValue(compareValue), m_parameterName(parameterName), m_parameterValue(parameterValue)
-	{
-		QString objectText = QString("If %1::%2::%3 %4 %5, set %6 to %7")
-			.arg(m_eventSource)
-			.arg(m_sampleName)
-			.arg(m_fieldName)
-			.arg(ComparisonFucntionToQString(m_comparisionFunction))
-			.arg(ComparisonValueToQString(m_comparisonValue))
-			.arg(m_parameterName)
-			.arg(m_parameterValue);
-			setText(objectText);
-	}
+	TriggerItem(QString eventSource, QString sampleName, int fieldIndex, ComparisonType compareFunc, QString compareValue, QString parameterName, QString parameterValue);
 
 private:
-	QString ComparisonValueToQString(T value) {
-		if (std::is_same<T, int>::value) {
-			return QString("%1").arg((int)value);
-		}
-		else if (std::is_same<T, float>::value || std::is_same<T, double>::value) {
-			return QString("%1").arg((double)value);
-		} else if (std::is_same<T, QString>::value) {
-			return QString(value);
-		}
-	}
 
 	// Sensor Values
 	QString m_eventSource;
 	QString m_sampleName;
-	QString m_fieldName;
 	int m_fieldIndex;
 
 	ComparisonType m_comparisionFunction;
-	T m_comparisonValue;
+	QString m_comparisonValue;
 	
 	// Game Engine Values
 	QString m_parameterName;

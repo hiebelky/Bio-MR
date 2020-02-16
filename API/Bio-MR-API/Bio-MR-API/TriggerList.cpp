@@ -41,7 +41,7 @@ TriggerList::TriggerList(StorageManager* sm, QWidget* parent) : QWidget(parent),
 	m_pTriggerView->setModel(m_pTriggerModel);
 
 	// Remove later
-	QStandardItem* testRow = new TriggerItem<int>("Shimmer", "GSR", "Heart Rate", 0, ComparisonType::k_greaterEqual, 80, "Rain Intensity", "0.50");
+	QStandardItem* testRow = new TriggerItem("Shimmer", "GSR", 0, ComparisonType::k_greaterEqual, "80", "Rain Intensity", "0.50");
 	m_pTriggerModel->appendRow(testRow);
 
 	// Create the add/remove buttons
@@ -74,9 +74,6 @@ TriggerList::TriggerList(StorageManager* sm, QWidget* parent) : QWidget(parent),
 
 void TriggerList::SetUpTriggerWindow() {
 	m_pAddTriggerWindow = new QWidget();
-
-	m_pMainLayout = new QGridLayout(m_pAddTriggerWindow);
-	m_pAddTriggerWindow->setLayout(m_pMainLayout);
 
 	// Create a bold font
 	QFont boldFont = font();
@@ -114,6 +111,7 @@ void TriggerList::SetUpTriggerWindow() {
 	QLabel* pParameterNameLabel = new QLabel("Parameter Name", m_pAddTriggerWindow);
 	m_pParameterNameInput = new QComboBox(m_pAddTriggerWindow);
 	QLabel* pParameterValueLabel = new QLabel("Parameter Value", m_pAddTriggerWindow);
+	m_pParameterValueInput = new QDoubleSpinBox();
 
 	UpdateGameEngineParameterList();
 	UpdateGameEngineParameterValue(-1);
@@ -121,7 +119,18 @@ void TriggerList::SetUpTriggerWindow() {
 	connect(m_pParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
 	connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, &TriggerList::UpdateGameEngineParameterList);
 
+	// Create a preview window which updates on any changes
+	m_pPreviewTrigger = new QLabel(m_pAddTriggerWindow);
+	connect(m_pEventSourceInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pSampleNameInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pFieldIndexInput, QOverload<int>::of(&QSpinBox::valueChanged), this, &TriggerList::UpdatePreviewText);
+	connect(m_pComparisonFunctionInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pComparisonValueInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pParameterNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pParameterValueInput, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &TriggerList::UpdatePreviewText);
 
+	m_pMainLayout = new QGridLayout(m_pAddTriggerWindow);
+	m_pAddTriggerWindow->setLayout(m_pMainLayout);
 	m_pMainLayout->addWidget(pSensorLevel, 0, 0, 1, -1);
 	m_pMainLayout->addWidget(pEventSourceLabel, 1, 0);
 	m_pMainLayout->addWidget(m_pEventSourceInput, 1, 1);
@@ -138,6 +147,9 @@ void TriggerList::SetUpTriggerWindow() {
 	m_pMainLayout->addWidget(pParameterNameLabel, 7, 0);
 	m_pMainLayout->addWidget(m_pParameterNameInput, 7, 1);
 	m_pMainLayout->addWidget(pParameterValueLabel, 8, 0);
+	m_pMainLayout->addWidget(m_pParameterValueInput, 8, 1);
+
+	m_pMainLayout->addWidget(m_pPreviewTrigger, 9, 0, 1, -1);
 
 
 	m_pMainLayout->setColumnStretch(1, 1);
@@ -161,37 +173,60 @@ void TriggerList::UpdateGameEngineParameterList()
 
 void TriggerList::UpdateGameEngineParameterValue(int index)
 {
-	// Update the parameter value spinbox
-	if (m_pParameterValueInput) {
-		delete m_pParameterValueInput;
-	}
-
 	auto allParams = m_pStorageManager->GetGameEngineParameters();
 
 	if (index < 0 || index > allParams.size())
 	{
-		// default
-		m_pParameterValueInput = new QSpinBox();
-	}
-	else {
+		m_pParameterValueInput->setMinimum(0);
+		m_pParameterValueInput->setValue(0);
+		m_pParameterValueInput->setMaximum(99);
+	} else {
 		GameEngineRegisterCommandDatagram& selectedParameter = allParams[index];
 
 		if (selectedParameter.m_type.compare("Int", Qt::CaseInsensitive) == 0) {
-			QSpinBox* pTempSpinBox = new QSpinBox();
-			pTempSpinBox->setMinimum(selectedParameter.m_minVal.toInt());
-			pTempSpinBox->setValue(selectedParameter.m_startVal.toInt());
-			pTempSpinBox->setMaximum(selectedParameter.m_maxVal.toInt());
-			m_pParameterValueInput = pTempSpinBox;
+			m_pParameterValueInput->setMinimum(selectedParameter.m_minVal.toInt());
+			m_pParameterValueInput->setValue(selectedParameter.m_startVal.toInt());
+			m_pParameterValueInput->setMaximum(selectedParameter.m_maxVal.toInt());
+			m_pParameterValueInput->setDecimals(0);
 		}
 		else if (selectedParameter.m_type.compare("Float", Qt::CaseInsensitive) == 0 || selectedParameter.m_type.compare("Double", Qt::CaseInsensitive) == 0) {
-			QDoubleSpinBox* pTempSpinBox = new QDoubleSpinBox();
-			pTempSpinBox->setMinimum(selectedParameter.m_minVal.toDouble());
-			pTempSpinBox->setValue(selectedParameter.m_startVal.toDouble());
-			pTempSpinBox->setMaximum(selectedParameter.m_maxVal.toDouble());
-			m_pParameterValueInput = pTempSpinBox;
+			m_pParameterValueInput->setMinimum(selectedParameter.m_minVal.toDouble());
+			m_pParameterValueInput->setValue(selectedParameter.m_startVal.toDouble());
+			m_pParameterValueInput->setMaximum(selectedParameter.m_maxVal.toDouble());
+			m_pParameterValueInput->setDecimals(2);
 		}
 	}
+}
 
 
-	m_pMainLayout->addWidget(m_pParameterValueInput, 8, 1);
+void TriggerList::UpdatePreviewText()
+{
+	// Sensor input
+	QString eventSource = m_pEventSourceInput->text();
+	QString sampleName = m_pSampleNameInput->text();
+	int eventIndex = m_pFieldIndexInput->value();
+	ComparisonType compFunc = (ComparisonType)m_pComparisonFunctionInput->currentIndex();
+	QString compVal = m_pComparisonValueInput->text();
+
+	// Command
+	QString paramName = m_pParameterNameInput->currentText();
+	QString paramValue = QString("%1").arg(m_pParameterValueInput->value());
+
+	TriggerItem temp(eventSource, sampleName, eventIndex, compFunc, compVal, paramName, paramValue);
+	m_pPreviewTrigger->setText(temp.text());
+}
+
+
+TriggerItem::TriggerItem(QString eventSource, QString sampleName, int fieldIndex, ComparisonType compareFunc, QString compareValue, QString parameterName, QString parameterValue)
+	: QStandardItem(), m_eventSource(eventSource), m_sampleName(sampleName), m_fieldIndex(fieldIndex), m_comparisionFunction(compareFunc), m_comparisonValue(compareValue), m_parameterName(parameterName), m_parameterValue(parameterValue)
+{
+	QString objectText = QString("If %1::%2[%3] %4 %5, set %6 to %7")
+		.arg(m_eventSource)
+		.arg(m_sampleName)
+		.arg(fieldIndex)
+		.arg(ComparisonFucntionToQString(m_comparisionFunction))
+		.arg(m_comparisonValue)
+		.arg(m_parameterName)
+		.arg(m_parameterValue);
+	setText(objectText);
 }
