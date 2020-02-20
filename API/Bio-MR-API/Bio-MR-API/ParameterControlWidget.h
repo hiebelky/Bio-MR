@@ -6,6 +6,7 @@
 
 class QHBoxLayout;
 class MultipleInputBox;
+class QTimer;
 
 class ParameterControlWidget : public QWidget {
 	Q_OBJECT
@@ -20,6 +21,7 @@ signals:
 
 private slots:
 	void ConstructDatagram();
+	void UpdateBackgroundColor();
 
 private:
 
@@ -27,5 +29,14 @@ private:
 	QWidget* m_pParameterLabel = nullptr;
 	MultipleInputBox* m_pInputBox = nullptr;
 	QHBoxLayout* m_pLayout = nullptr;
+
+
+	// Values for changing the background color
+	const QColor bgColor = { 120, 205, 245, 255 };
+	QColor startingBgColor;
+	const int bgTotalTime = 1000; // msec
+	const int bgTimerInterval = 25; // msec
+	double blendPercent = 0;
+	QTimer* m_pTimer;
 };
 

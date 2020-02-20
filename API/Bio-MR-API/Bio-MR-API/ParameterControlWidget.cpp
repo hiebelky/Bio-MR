@@ -6,16 +6,24 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QTimer>
 
-ParameterControlWidget::ParameterControlWidget(GameEngineRegisterCommandDatagram& createInfo, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) 
+ParameterControlWidget::ParameterControlWidget(GameEngineRegisterCommandDatagram& createInfo, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
+	setAutoFillBackground(true);
+	startingBgColor = palette().color(QPalette::Background);
+	m_pTimer = new QTimer(this);
+	m_pTimer->setInterval(bgTimerInterval);
+	connect(m_pTimer, &QTimer::timeout, this, &ParameterControlWidget::UpdateBackgroundColor);
+
+
 	// Parse the parameter name and button type
 	m_parameterName = createInfo.m_parameterName;
 	bool isButton = createInfo.m_isButton.compare("True", Qt::CaseInsensitive) == 0;
 
 	// Create the horizontal layout for this widget
 	m_pLayout = new QHBoxLayout(this);
-	m_pLayout->setContentsMargins(0, 0, 0, 0);
+	m_pLayout->setContentsMargins(3, 0, 3, 0);
 	setLayout(m_pLayout);
 
 	// Create the name either as a button, or a label
@@ -74,4 +82,29 @@ void ParameterControlWidget::UpdateValueExtern(QString& value)
 	m_pInputBox->SetValue(value);
 	m_pInputBox->blockSignals(false);
 	ConstructDatagram();
+
+	blendPercent = 1.f;
+	m_pTimer->start();
+}
+
+
+void ParameterControlWidget::UpdateBackgroundColor()
+{
+	// Adjust the blend %
+	blendPercent -= (double)bgTimerInterval / (double)bgTotalTime;
+	if (blendPercent <= 0) {
+		blendPercent = 0;
+		m_pTimer->stop();
+	}
+
+	// Find the blending
+	int r = startingBgColor.red() * (1. - blendPercent) + bgColor.red() * blendPercent;
+	int g = startingBgColor.green() * (1. - blendPercent) + bgColor.green() * blendPercent;
+	int b = startingBgColor.blue() * (1. - blendPercent) + bgColor.blue() * blendPercent;
+
+	QColor blendedColor = QColor(r, g, b);
+
+	QPalette p = palette();
+	p.setColor(QPalette::Background, blendedColor);
+	setPalette(p);
 }
