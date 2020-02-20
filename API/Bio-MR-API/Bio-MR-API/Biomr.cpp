@@ -29,25 +29,16 @@ Biomr::Biomr(QWidget* parent)
 
 void Biomr::AddParameterControlWidget(GameEngineRegisterCommandDatagram& params)
 {
-	ParameterControlWidgetBase* pTempControlWidget = nullptr;
-
+	// When adding a new parameter control widget, store the information about
+	// paramter name, type, min, max to populate combo boxes later
 	m_pStorageManager->AddGameEngineParameter(params);
 
-	// Determine the type of the parameter, and create
-	// a templated widget using that type
-	if (params.m_type.compare("Int", Qt::CaseInsensitive) == 0) {
-		pTempControlWidget = new ParameterControlWidget<int>(params, this);
-	}
-	else if (params.m_type.compare("Float", Qt::CaseInsensitive) == 0 || params.m_type.compare("Double", Qt::CaseInsensitive) == 0) {
-		pTempControlWidget = new ParameterControlWidget<double>(params, this);
-	}
+	// Create a new parameter control widget
+	ParameterControlWidget* pTempControlWidget = new ParameterControlWidget(params, this);
 
-	if (!pTempControlWidget) {
-		return;
-	}
-
-	// Alert the network manager when new data is ready for transmit
-	connect(pTempControlWidget, &ParameterControlWidgetBase::DatagramReady, m_pNetworkManager, &NetworkManager::SendGameEngineDatagram);
+	// Alert the network manager when the user modifies a value in a parameter control widget
+	// Automatically send the packet
+	connect(pTempControlWidget, &ParameterControlWidget::DatagramReady, m_pNetworkManager, &NetworkManager::SendGameEngineDatagram);
 
 	// Add the new widget to the layout.
 	// Place it in the 2nd to last position.

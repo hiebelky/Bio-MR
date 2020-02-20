@@ -32,7 +32,14 @@ enum class ComparisonType {
 	k_equal,
 	k_greaterEqual,
 	k_greater,
-	k_count
+	k_count,
+};
+
+enum class InputType {
+	k_int,
+	k_double,
+	k_string,
+	k_count,
 };
 
 struct TriggerDescription {

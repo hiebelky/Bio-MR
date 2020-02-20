@@ -86,7 +86,9 @@
   <ItemGroup>
     <ClCompile Include="Biomr.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MultipleInputBox.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
+    <ClCompile Include="ParameterCrontrolWidget.cpp" />
     <ClCompile Include="StorageManager.cpp" />
     <ClCompile Include="TriggerList.cpp" />
   </ItemGroup>
@@ -108,6 +110,7 @@
   <ItemGroup>
     <QtMoc Include="StorageManager.h" />
     <QtMoc Include="TriggerList.h" />
+    <QtMoc Include="MultipleInputBox.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
