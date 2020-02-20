@@ -88,7 +88,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MultipleInputBox.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
-    <ClCompile Include="ParameterCrontrolWidget.cpp" />
+    <ClCompile Include="ParameterControlWidget.cpp" />
     <ClCompile Include="StorageManager.cpp" />
     <ClCompile Include="TriggerList.cpp" />
   </ItemGroup>

@@ -14,6 +14,7 @@ class QLabel;
 class QComboBox;
 class QGridLayout;
 class TriggerItem;
+class ParameterControlWidget;
 
 class TriggerList : public QWidget
 {
@@ -25,7 +26,9 @@ private:
 
 	void UpdateGameEngineParameterList();
 	void UpdateGameEngineParameterValue(int index);
+	std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& GetSelectedGameEngineParameters();
 	void UpdatePreviewText();
+
 
 	TriggerItem* CreateNewTriggerItem();
 

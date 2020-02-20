@@ -29,12 +29,12 @@ Biomr::Biomr(QWidget* parent)
 
 void Biomr::AddParameterControlWidget(GameEngineRegisterCommandDatagram& params)
 {
-	// When adding a new parameter control widget, store the information about
-	// paramter name, type, min, max to populate combo boxes later
-	m_pStorageManager->AddGameEngineParameter(params);
-
 	// Create a new parameter control widget
 	ParameterControlWidget* pTempControlWidget = new ParameterControlWidget(params, this);
+
+	// When adding a new parameter control widget, store the information about
+	// paramter name, type, min, max to populate combo boxes later
+	m_pStorageManager->AddGameEngineParameter(params, pTempControlWidget);
 
 	// Alert the network manager when the user modifies a value in a parameter control widget
 	// Automatically send the packet
@@ -51,7 +51,7 @@ void Biomr::AddParameterControlWidget(GameEngineRegisterCommandDatagram& params)
 
 void Biomr::HandleAutomaticTriggers(IMotionsDatagram& datagram)
 {
-	auto allTriggers = m_pStorageManager->GetAllTriggers();
+	auto& allTriggers = m_pStorageManager->GetAllTriggers();
 	for (auto it : allTriggers) {
 		if (datagram.m_eventSource.compare(it->m_eventSource, Qt::CaseInsensitive) != 0) {
 			continue;
@@ -120,8 +120,9 @@ void Biomr::HandleAutomaticTriggers(IMotionsDatagram& datagram)
 		}
 
 		if (shouldTrigger) {
-			QString triggerMessage = QString("%1;%2;").arg(it->m_parameterName).arg(it->m_parameterValue);
-			m_pNetworkManager->SendGameEngineDatagram(triggerMessage);
+			if (it->m_controlWidget) {
+				it->m_controlWidget->UpdateValueExtern(it->m_parameterValue);
+			}
 		}
 
 	}

@@ -66,3 +66,12 @@ void ParameterControlWidget::ConstructDatagram()
 	QString datagram = QString("%1;%2;").arg(m_parameterName).arg(m_pInputBox->GetValue());
 	emit DatagramReady(datagram);
 }
+
+void ParameterControlWidget::UpdateValueExtern(QString& value)
+{
+	// Block signals to prevent duplicate datagrams
+	m_pInputBox->blockSignals(true);
+	m_pInputBox->SetValue(value);
+	m_pInputBox->blockSignals(false);
+	ConstructDatagram();
+}

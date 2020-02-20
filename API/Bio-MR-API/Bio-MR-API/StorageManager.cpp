@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include "json.h"
+#include "ParameterControlWidget.h"
 
 const char* SENSOR_CONFIGURATION_PATH = "SensorConfiguration.json";
 
@@ -55,13 +56,13 @@ StorageManager::StorageManager() : QObject()
 	}
 }
 
-void StorageManager::AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter)
+void StorageManager::AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter, ParameterControlWidget* widget)
 {
-	m_gameEngineParameters.push_back(parameter);
+	m_gameEngineParameters.push_back(std::make_pair(parameter, widget));
 	emit NewGameEngineParameter();
 }
 
-std::vector<GameEngineRegisterCommandDatagram>& StorageManager::GetGameEngineParameters()
+std::vector<std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>>& StorageManager::GetGameEngineParameters()
 {
 	return m_gameEngineParameters;
 }

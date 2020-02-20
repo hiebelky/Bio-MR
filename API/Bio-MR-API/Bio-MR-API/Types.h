@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QStringList>
+class ParameterControlWidget;
 
 struct IMotionsDatagram {
 	QString m_seqNumber;
@@ -54,4 +55,7 @@ struct TriggerDescription {
 	// Game Engine Values
 	QString m_parameterName;
 	QString m_parameterValue;
+
+	// The widget that is controlled by this trigger
+	ParameterControlWidget* m_controlWidget;
 };

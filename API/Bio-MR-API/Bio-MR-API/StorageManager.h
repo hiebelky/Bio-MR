@@ -8,9 +8,12 @@
 #include <QString>
 #include <QObject>
 
-struct DataField {
+// Forward declare
+class ParameterControlWidget;
+
+/*struct DataField {
 	QString m_name;
-};
+};*/
 
 /*bool operator== (const DataField* lhs, const DataField* rhs)
 {
@@ -27,7 +30,7 @@ bool comparison(const DataField* lhs, const DataField* rhs) {
 	return lhs->m_name.compare(rhs->m_name) > 0;
 }*/
 
-template<>
+/*template<>
 struct std::less<DataField*>
 {
 	bool operator()(const DataField&& lhs, const DataField&& rhs) const
@@ -58,7 +61,7 @@ struct SampleName : DataField {
 
 struct EventSource : DataField {
 	std::set<SampleName> m_sampleNames;
-};
+};*/
 
 class StorageManager : public QObject{
 	Q_OBJECT
@@ -68,8 +71,8 @@ public:
 	// Add/retrieve
 	//template <class T>
 	//void AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, int dataFieldIndexInRawData, T minVal, T maxVal);
-	void AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter);
-	std::vector<GameEngineRegisterCommandDatagram>& GetGameEngineParameters();
+	void AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter, ParameterControlWidget* widget);
+	std::vector<std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>>& GetGameEngineParameters();
 
 	void AddTrigger(TriggerDescription* desc);
 	void RemoveTrigger(TriggerDescription* desc);
@@ -80,6 +83,8 @@ signals:
 
 private:
 	std::vector<TriggerDescription*> m_triggers;
-	std::vector<GameEngineRegisterCommandDatagram> m_gameEngineParameters;
-	std::set<EventSource> m_eventSources;
+	std::vector<std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>> m_gameEngineParameters;
+
+	// Currently unused
+	//std::set<EventSource> m_eventSources;
 };

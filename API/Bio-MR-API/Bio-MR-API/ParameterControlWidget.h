@@ -12,6 +12,9 @@ class ParameterControlWidget : public QWidget {
 public:
 	ParameterControlWidget(GameEngineRegisterCommandDatagram& createInfo, QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
+	// Called when a trigger wants to change the value corresponding to this widget
+	void UpdateValueExtern(QString& value);
+
 signals:
 	void DatagramReady(QString& message);
 

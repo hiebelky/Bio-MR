@@ -17,7 +17,7 @@
     <ClCompile Include="MultipleInputBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParameterCrontrolWidget.cpp">
+    <ClCompile Include="ParameterControlWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

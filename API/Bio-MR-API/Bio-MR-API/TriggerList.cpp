@@ -14,15 +14,16 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 
-
-QString ComparisonFucntionToQString(ComparisonType type) {
-	switch (type) {
-	case ComparisonType::k_less: return "<";
-	case ComparisonType::k_lessEqual: return "<=";
-	case ComparisonType::k_equal: return "==";
-	case ComparisonType::k_greaterEqual: return ">=";
-	case ComparisonType::k_greater: return ">";
-	default: return "";
+namespace{
+	QString ComparisonFucntionToQString(ComparisonType type) {
+		switch (type) {
+		case ComparisonType::k_less: return "<";
+		case ComparisonType::k_lessEqual: return "<=";
+		case ComparisonType::k_equal: return "==";
+		case ComparisonType::k_greaterEqual: return ">=";
+		case ComparisonType::k_greater: return ">";
+		default: return "";
+		}
 	}
 }
 
@@ -197,12 +198,12 @@ void TriggerList::SetUpTriggerWindow() {
 
 void TriggerList::UpdateGameEngineParameterList()
 {
-	auto allParams = m_pStorageManager->GetGameEngineParameters();
+	auto& allParams = m_pStorageManager->GetGameEngineParameters();
 
 	// Update the paramater name combo box
 	QStringList names;
-	for (auto it : allParams) {
-		names << it.m_parameterName;
+	for (auto& it : allParams) {
+		names << it.first.m_parameterName;
 	}
 	
 	m_pParameterNameInput->clear();
@@ -211,7 +212,7 @@ void TriggerList::UpdateGameEngineParameterList()
 
 void TriggerList::UpdateGameEngineParameterValue(int index)
 {
-	auto allParams = m_pStorageManager->GetGameEngineParameters();
+	auto& allParams = m_pStorageManager->GetGameEngineParameters();
 
 	if (index < 0 || index > allParams.size())
 	{
@@ -219,7 +220,7 @@ void TriggerList::UpdateGameEngineParameterValue(int index)
 		m_pParameterValueInput->setValue(0);
 		m_pParameterValueInput->setMaximum(99);
 	} else {
-		GameEngineRegisterCommandDatagram& selectedParameter = allParams[index];
+		GameEngineRegisterCommandDatagram& selectedParameter = allParams[index].first;
 
 		if (selectedParameter.m_type.compare("Int", Qt::CaseInsensitive) == 0) {
 			m_pParameterValueInput->setMinimum(selectedParameter.m_minVal.toInt());
@@ -234,6 +235,18 @@ void TriggerList::UpdateGameEngineParameterValue(int index)
 			m_pParameterValueInput->setDecimals(2);
 		}
 	}
+}
+
+std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& TriggerList::GetSelectedGameEngineParameters()
+{
+	auto& allParams = m_pStorageManager->GetGameEngineParameters();
+	int selectedIndex = m_pParameterNameInput->currentIndex();
+
+	if (selectedIndex >= allParams.size() || selectedIndex < 0) {
+		return std::make_pair(GameEngineRegisterCommandDatagram(), (ParameterControlWidget*)nullptr);
+	}
+
+	return allParams.at(selectedIndex);
 }
 
 
@@ -252,6 +265,8 @@ TriggerItem* TriggerList::CreateNewTriggerItem() {
 	pDescription->m_parameterName = m_pParameterNameInput->currentText();
 	pDescription->m_parameterValue = QString("%1").arg(m_pParameterValueInput->value());
 
+	pDescription->m_controlWidget = GetSelectedGameEngineParameters().second;
+
 	return new TriggerItem(pDescription);
 }
 
@@ -263,6 +278,11 @@ void TriggerList::UpdatePreviewText()
 }
 
 
+
+
+// --------------------------------------------------------
+// Trigger Item
+// --------------------------------------------------------
 TriggerItem::TriggerItem(TriggerDescription* desc)
 	: QStandardItem(), m_pDescription(desc)
 {
