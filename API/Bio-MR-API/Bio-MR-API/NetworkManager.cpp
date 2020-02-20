@@ -3,6 +3,8 @@
 #include <QNetworkDatagram>
 #include <QUdpSocket>
 #include <QString>
+#include <QFile>
+#include <QTextStream>
 
 
 NetworkManager::NetworkManager(QObject* parent) : QObject(parent)
@@ -20,6 +22,12 @@ NetworkManager::NetworkManager(QObject* parent) : QObject(parent)
 	// Set up send sockets
 	m_pGameEngineSender = new QUdpSocket(this);
 	m_pIMotionsSender = new QUdpSocket(this);
+
+	// Set up logger files
+	m_pIMotionsLog = new QFile("imotions_datagram_log.txt", this);
+	m_pIMotionsLog->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+	m_pGameEngineLog = new QFile("game_engine_datagram_log.txt", this);
+	m_pGameEngineLog->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
 }
 
 
@@ -40,6 +48,10 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 	QByteArray& rawData = datagram.data();
 	QString dataString = QString::fromUtf8(rawData);
 	QStringList splitData = dataString.split(";");
+
+	// Log the data
+	QTextStream stream(m_pIMotionsLog);
+	stream << dataString << "\n";
 
 	// Must have length 5
 	if (splitData.size() < 5) {
@@ -81,6 +93,10 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 	QByteArray& rawData = datagram.data();
 	QString dataString = QString::fromUtf8(rawData);
 	QStringList splitData = dataString.split(";");
+
+	// Log the data
+	QTextStream stream(m_pGameEngineLog);
+	stream << dataString << "\n";
 
 	// Command length must be larger than 1
 	if (splitData.length() < 1) {

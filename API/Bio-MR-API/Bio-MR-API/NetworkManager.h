@@ -8,6 +8,7 @@
 class QNetworkDatagram;
 class QUdpSocket;
 class QString;
+class QFile;
 
 
 // Define the ports we will be using
@@ -44,4 +45,8 @@ private:
 	QUdpSocket* m_pIMotionsSender = nullptr;
 	QUdpSocket* m_pGameEngineListener = nullptr;
 	QUdpSocket* m_pGameEngineSender = nullptr;
+
+	// Loggers to write packets
+	QFile* m_pIMotionsLog;
+	QFile* m_pGameEngineLog;
 };
