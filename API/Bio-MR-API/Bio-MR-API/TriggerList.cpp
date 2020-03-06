@@ -103,93 +103,149 @@ void TriggerList::SetUpTriggerWindow() {
 	pTabWidget->addTab(pPresetTab, "Preset Sensor");
 	pTabWidget->addTab(pCustomTab, "Custom Sensor");
 
+	connect(pTabWidget, &QTabWidget::currentChanged, this, [&](int index) {
+		// Keep track of which window we're on
+		m_isCustom = (bool)index;
+	});
+
 	// Left tab (Preset Sensor)
-	{
-
-
-
-
-	}
-
-	// Right tab (Manual Entry)
 	{
 		// Create the sensor level inputs 
 		QLabel* pEventSourceLabel = new QLabel("Event Source:", m_pAddTriggerWindow);
-		m_pEventSourceInput = new QLineEdit(m_pAddTriggerWindow);
-		m_pEventSourceInput->setText("Source");
+		m_pPresetEventSourceInput = new QComboBox(m_pAddTriggerWindow);
 		QLabel* pSampleNameLabel = new QLabel("Sample Name:", m_pAddTriggerWindow);
-		m_pSampleNameInput = new QLineEdit(m_pAddTriggerWindow);
-		m_pSampleNameInput->setText("Name");
+		m_pPresetSampleNameInput = new QComboBox(m_pAddTriggerWindow);
 		QLabel* pFieldIdLabel = new QLabel("Field Id:", m_pAddTriggerWindow);
-		m_pFieldIndexInput = new QSpinBox(m_pAddTriggerWindow);
+		m_pPresetFieldIndexInput = new QComboBox(m_pAddTriggerWindow);
 
 		QLabel* pComparisonFunctionLabel = new QLabel("Comparison:", m_pAddTriggerWindow);
-		m_pComparisonFunctionInput = new QComboBox(m_pAddTriggerWindow);
+		m_pPresetComparisonFunctionInput = new QComboBox(m_pAddTriggerWindow);
 		QStringList comparisonOptions;
 		for (ComparisonType x = (ComparisonType)0; x < ComparisonType::k_count; x = (ComparisonType)((int)x + 1)) {
 			comparisonOptions << ComparisonFucntionToQString(x);
 		}
-		m_pComparisonFunctionInput->addItems(comparisonOptions);
+		m_pPresetComparisonFunctionInput->addItems(comparisonOptions);
 
 		QLabel* pComparisonValueLabel = new QLabel("Threshold Value:", m_pAddTriggerWindow);
-		m_pComparisonValueInput = new QLineEdit(m_pAddTriggerWindow);
-		m_pComparisonValueInput->setText("0");
+		m_pPresetComparisonValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
+		m_pPresetComparisonValueInput->SetValue("0");
 
 
 		QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
-		m_pParameterNameInput = new QComboBox(m_pAddTriggerWindow);
+		m_pPresetParameterNameInput = new QComboBox(m_pAddTriggerWindow);
 		QLabel* pParameterValueLabel = new QLabel("Change Value:", m_pAddTriggerWindow);
-		m_pParameterValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
+		m_pPresetParameterValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
 
-		UpdateGameEngineParameterList();
-		UpdateGameEngineParameterValue(-1);
-
-		connect(m_pParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
+		connect(m_pPresetParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
 		connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, &TriggerList::UpdateGameEngineParameterList);
 
 
 		// Layout the widget
 		QGridLayout* pGridLayout = new QGridLayout(pPresetTab);
-		pCustomTab->setLayout(pGridLayout);
+		pPresetTab->setLayout(pGridLayout);
 
 		pGridLayout->addWidget(pEventSourceLabel, 0, 0);
-		pGridLayout->addWidget(m_pEventSourceInput, 0, 1);
+		pGridLayout->addWidget(m_pPresetEventSourceInput, 0, 1);
 		pGridLayout->addWidget(pSampleNameLabel, 1, 0);
-		pGridLayout->addWidget(m_pSampleNameInput, 1, 1);
+		pGridLayout->addWidget(m_pPresetSampleNameInput, 1, 1);
 		pGridLayout->addWidget(pFieldIdLabel, 2, 0);
-		pGridLayout->addWidget(m_pFieldIndexInput, 2, 1);
+		pGridLayout->addWidget(m_pPresetFieldIndexInput, 2, 1);
 		pGridLayout->addWidget(pComparisonFunctionLabel, 3, 0);
-		pGridLayout->addWidget(m_pComparisonFunctionInput, 3, 1);
+		pGridLayout->addWidget(m_pPresetComparisonFunctionInput, 3, 1);
 		pGridLayout->addWidget(pComparisonValueLabel, 4, 0);
-		pGridLayout->addWidget(m_pComparisonValueInput, 4, 1);
+		pGridLayout->addWidget(m_pPresetComparisonValueInput, 4, 1);
 
 		// Spacing
 		pGridLayout->setRowMinimumHeight(5, 10);
 
 		pGridLayout->addWidget(pParameterNameLabel, 6, 0);
-		pGridLayout->addWidget(m_pParameterNameInput, 6, 1);
+		pGridLayout->addWidget(m_pPresetParameterNameInput, 6, 1);
 		pGridLayout->addWidget(pParameterValueLabel, 7, 0);
-		pGridLayout->addWidget(m_pParameterValueInput, 7, 1);
+		pGridLayout->addWidget(m_pPresetParameterValueInput, 7, 1);
 
 
 		pGridLayout->setColumnStretch(1, 1);
 		pGridLayout->setRowStretch(99, 1);
 	}
 
+	// Right tab (Manual Entry)
+	{
+		// Create the sensor level inputs 
+		QLabel* pEventSourceLabel = new QLabel("Event Source:", m_pAddTriggerWindow);
+		m_pCustomEventSourceInput = new QLineEdit(m_pAddTriggerWindow);
+		m_pCustomEventSourceInput->setText("Source");
+		QLabel* pSampleNameLabel = new QLabel("Sample Name:", m_pAddTriggerWindow);
+		m_pCustomSampleNameInput = new QLineEdit(m_pAddTriggerWindow);
+		m_pCustomSampleNameInput->setText("Name");
+		QLabel* pFieldIdLabel = new QLabel("Field Id:", m_pAddTriggerWindow);
+		m_pCustomFieldIndexInput = new QSpinBox(m_pAddTriggerWindow);
 
+		QLabel* pComparisonFunctionLabel = new QLabel("Comparison:", m_pAddTriggerWindow);
+		m_pCustomComparisonFunctionInput = new QComboBox(m_pAddTriggerWindow);
+		QStringList comparisonOptions;
+		for (ComparisonType x = (ComparisonType)0; x < ComparisonType::k_count; x = (ComparisonType)((int)x + 1)) {
+			comparisonOptions << ComparisonFucntionToQString(x);
+		}
+		m_pCustomComparisonFunctionInput->addItems(comparisonOptions);
+
+		QLabel* pComparisonValueLabel = new QLabel("Threshold Value:", m_pAddTriggerWindow);
+		m_pCustomComparisonValueInput = new QLineEdit(m_pAddTriggerWindow);
+		m_pCustomComparisonValueInput->setText("0");
+
+
+		QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
+		m_pCustomParameterNameInput = new QComboBox(m_pAddTriggerWindow);
+		QLabel* pParameterValueLabel = new QLabel("Change Value:", m_pAddTriggerWindow);
+		m_pCustomParameterValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
+
+		connect(m_pCustomParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
+		connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, &TriggerList::UpdateGameEngineParameterList);
+
+
+		// Layout the widget
+		QGridLayout* pGridLayout = new QGridLayout(pCustomTab);
+		pCustomTab->setLayout(pGridLayout);
+
+		pGridLayout->addWidget(pEventSourceLabel, 0, 0);
+		pGridLayout->addWidget(m_pCustomEventSourceInput, 0, 1);
+		pGridLayout->addWidget(pSampleNameLabel, 1, 0);
+		pGridLayout->addWidget(m_pCustomSampleNameInput, 1, 1);
+		pGridLayout->addWidget(pFieldIdLabel, 2, 0);
+		pGridLayout->addWidget(m_pCustomFieldIndexInput, 2, 1);
+		pGridLayout->addWidget(pComparisonFunctionLabel, 3, 0);
+		pGridLayout->addWidget(m_pCustomComparisonFunctionInput, 3, 1);
+		pGridLayout->addWidget(pComparisonValueLabel, 4, 0);
+		pGridLayout->addWidget(m_pCustomComparisonValueInput, 4, 1);
+
+		// Spacing
+		pGridLayout->setRowMinimumHeight(5, 10);
+
+		pGridLayout->addWidget(pParameterNameLabel, 6, 0);
+		pGridLayout->addWidget(m_pCustomParameterNameInput, 6, 1);
+		pGridLayout->addWidget(pParameterValueLabel, 7, 0);
+		pGridLayout->addWidget(m_pCustomParameterValueInput, 7, 1);
+
+
+		pGridLayout->setColumnStretch(1, 1);
+		pGridLayout->setRowStretch(99, 1);
+	}
+
+	// Initialize the values
+	UpdateGameEngineParameterList();
+	UpdateGameEngineParameterValue(-1);
 
 
 	// Create the preview widget which updates when any of the boxes are changed
 	m_pPreviewTrigger = new QLabel(m_pAddTriggerWindow);
 	m_pPreviewTrigger->setAlignment(Qt::AlignCenter);
 	m_pPreviewTrigger->setFont(smallBold);
-	connect(m_pEventSourceInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pSampleNameInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pFieldIndexInput, QOverload<int>::of(&QSpinBox::valueChanged), this, &TriggerList::UpdatePreviewText);
-	connect(m_pComparisonFunctionInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pComparisonValueInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pParameterNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pParameterValueInput, &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pCustomEventSourceInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pCustomSampleNameInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pCustomFieldIndexInput, QOverload<int>::of(&QSpinBox::valueChanged), this, &TriggerList::UpdatePreviewText);
+	connect(m_pCustomComparisonFunctionInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pCustomComparisonValueInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pCustomParameterNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pCustomParameterValueInput, &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
 	UpdatePreviewText();
 
 
@@ -231,8 +287,8 @@ void TriggerList::UpdateGameEngineParameterList()
 		names << it.first.m_parameterName;
 	}
 	
-	m_pParameterNameInput->clear();
-	m_pParameterNameInput->addItems(names);
+	m_pCustomParameterNameInput->clear();
+	m_pCustomParameterNameInput->addItems(names);
 }
 
 void TriggerList::UpdateGameEngineParameterValue(int index)
@@ -241,28 +297,28 @@ void TriggerList::UpdateGameEngineParameterValue(int index)
 
 	if (index < 0 || index > allParams.size())
 	{
-		m_pParameterValueInput->SetMinValue(0);
-		m_pParameterValueInput->SetValue(0);
-		m_pParameterValueInput->SetMaxValue(99);
+		m_pCustomParameterValueInput->SetMinValue(0);
+		m_pCustomParameterValueInput->SetValue(0);
+		m_pCustomParameterValueInput->SetMaxValue(99);
 	} else {
 		GameEngineRegisterCommandDatagram& selectedParameter = allParams[index].first;
 
 		if (selectedParameter.m_type.compare("Int", Qt::CaseInsensitive) == 0) {
-			m_pParameterValueInput->SetType(InputType::k_int);
-			m_pParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
-			m_pParameterValueInput->SetValue(selectedParameter.m_startVal);
-			m_pParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
+			m_pCustomParameterValueInput->SetType(InputType::k_int);
+			m_pCustomParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
+			m_pCustomParameterValueInput->SetValue(selectedParameter.m_startVal);
+			m_pCustomParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
 		}
 		else if (selectedParameter.m_type.compare("Float", Qt::CaseInsensitive) == 0 || selectedParameter.m_type.compare("Double", Qt::CaseInsensitive) == 0) {
-			m_pParameterValueInput->SetType(InputType::k_double);
-			m_pParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
-			m_pParameterValueInput->SetValue(selectedParameter.m_startVal);
-			m_pParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
+			m_pCustomParameterValueInput->SetType(InputType::k_double);
+			m_pCustomParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
+			m_pCustomParameterValueInput->SetValue(selectedParameter.m_startVal);
+			m_pCustomParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
 		}
 		else if (selectedParameter.m_type.compare("String", Qt::CaseInsensitive) == 0)
 		{
-			m_pParameterValueInput->SetType(InputType::k_string);
-			m_pParameterValueInput->SetValue(selectedParameter.m_startVal);
+			m_pCustomParameterValueInput->SetType(InputType::k_string);
+			m_pCustomParameterValueInput->SetValue(selectedParameter.m_startVal);
 		}
 	}
 }
@@ -270,7 +326,7 @@ void TriggerList::UpdateGameEngineParameterValue(int index)
 std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& TriggerList::GetSelectedGameEngineParameters()
 {
 	auto& allParams = m_pStorageManager->GetGameEngineParameters();
-	int selectedIndex = m_pParameterNameInput->currentIndex();
+	int selectedIndex = m_pCustomParameterNameInput->currentIndex();
 
 	if (selectedIndex >= allParams.size() || selectedIndex < 0) {
 		return std::make_pair(GameEngineRegisterCommandDatagram(), (ParameterControlWidget*)nullptr);
@@ -284,16 +340,16 @@ TriggerItem* TriggerList::CreateNewTriggerItem() {
 	TriggerDescription* pDescription = new TriggerDescription();
 
 	// Sensor input
-	pDescription->m_eventSource = m_pEventSourceInput->text();
-	pDescription->m_sampleName = m_pSampleNameInput->text();
-	pDescription->m_fieldIndex = m_pFieldIndexInput->value();
+	pDescription->m_eventSource = m_pCustomEventSourceInput->text();
+	pDescription->m_sampleName = m_pCustomSampleNameInput->text();
+	pDescription->m_fieldIndex = m_pCustomFieldIndexInput->value();
 
-	pDescription->m_comparisionFunction = (ComparisonType)m_pComparisonFunctionInput->currentIndex();
-	pDescription->m_comparisonValue = m_pComparisonValueInput->text();
+	pDescription->m_comparisionFunction = (ComparisonType)m_pCustomComparisonFunctionInput->currentIndex();
+	pDescription->m_comparisonValue = m_pCustomComparisonValueInput->text();
 
 	// Game engine input
-	pDescription->m_parameterName = m_pParameterNameInput->currentText();
-	pDescription->m_parameterValue = QString("%1").arg(m_pParameterValueInput->GetValue());
+	pDescription->m_parameterName = m_pCustomParameterNameInput->currentText();
+	pDescription->m_parameterValue = QString("%1").arg(m_pCustomParameterValueInput->GetValue());
 
 	pDescription->m_controlWidget = GetSelectedGameEngineParameters().second;
 
