@@ -261,6 +261,9 @@ void TriggerList::SetUpTriggerWindow() {
 	m_pPreviewTrigger->setAlignment(Qt::AlignCenter);
 	m_pPreviewTrigger->setFont(smallBold);
 
+
+	connect(pTabWidget, &QTabWidget::currentChanged, this, &TriggerList::UpdatePreviewText);
+
 	connect(m_pPresetEventSourceInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pPresetSampleNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pPresetFieldIndexInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);

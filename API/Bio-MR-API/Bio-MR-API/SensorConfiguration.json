@@ -11,63 +11,63 @@
 							"Index": 0,
 							"Type" : "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "GazeLeftX",
+							"Name": "GazeLeftX",
 							"Index": 1,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "GazeLeftY",
+							"Name": "GazeLeftY",
 							"Index": 2,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "GazeRightX",
+							"Name": "GazeRightX",
 							"Index": 3,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "GazeRightY",
+							"Name": "GazeRightY",
 							"Index": 4,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "LeftPupilDiameter",
+							"Name": "LeftPupilDiameter",
 							"Index": 5,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "RightPupilDiameter",
+							"Name": "RightPupilDiameter",
 							"Index": 6,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "LeftEyeDistance",
+							"Name": "LeftEyeDistance",
 							"Index": 7,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
-							"Name" : "RightEyeDistance",
+							"Name": "RightEyeDistance",
 							"Index": 8,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
 							"Name" : "LeftEyePositionX",
@@ -104,11 +104,11 @@
 					"Fields" : 
 					[
 						{
-							"Name" : "CalibratrionPoints",
+							"Name": "CalibratrionPoints",
 							"Index": 0,
-							"Type" : "Int",
+							"Type": "Int",
 							"Min": 0,
-							"Max": 2147483647
+							"Max": 100000
 						},
 						{
 							"Name" : "CalibratrionQuality",
@@ -125,18 +125,18 @@
 							"Max": 100
 						},
 						{
-							"Name" : "MeanOffset",
+							"Name": "MeanOffset",
 							"Index": 3,
-							"Type" : "Float",
+							"Type": "Float",
 							"Min": 0,
-							"Max": 9999999
+							"Max": 100000
 						},
 						{
-							"Name" : "StandardDeviation",
+							"Name": "StandardDeviation",
 							"Index": 4,
-							"Type" : "Float",
+							"Type": "Float",
 							"Min": 0,
-							"Max": 9999999
+							"Max": 100000
 						}
 					]
 				}
