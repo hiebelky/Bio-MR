@@ -15,6 +15,7 @@ class QComboBox;
 class QGridLayout;
 class TriggerItem;
 class ParameterControlWidget;
+class MultipleInputBox;
 
 class TriggerList : public QWidget
 {
@@ -29,13 +30,16 @@ private:
 	std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& GetSelectedGameEngineParameters();
 	void UpdatePreviewText();
 
-
+	// Returns a trigger item created with the settings displayed in the preview
 	TriggerItem* CreateNewTriggerItem();
 
+	// MVC paradigm for displaying triggers
 	StorageManager* m_pStorageManager = nullptr;
 	QListView* m_pTriggerView = nullptr;
 	QStandardItemModel* m_pTriggerModel = nullptr;
 
+
+	// Window for adding a new trigger
 	QWidget* m_pAddTriggerWindow = nullptr;
 
 	// Sensor input
@@ -47,7 +51,7 @@ private:
 
 	// Command to game engine input
 	QComboBox* m_pParameterNameInput = nullptr;
-	QDoubleSpinBox* m_pParameterValueInput = nullptr;
+	MultipleInputBox* m_pParameterValueInput = nullptr;  // TODO: change to Multiple Input Box
 
 	// Preview
 	QLabel* m_pPreviewTrigger = nullptr;

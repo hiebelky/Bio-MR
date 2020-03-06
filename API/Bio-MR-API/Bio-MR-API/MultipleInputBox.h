@@ -18,6 +18,7 @@ public:
 	void SetValue(QString in);
 	void SetMaxValue(double in);
 	void SetMinValue(double in);
+	void SetType(InputType type);
 
 	inline InputType GetType() { return m_type; }
 

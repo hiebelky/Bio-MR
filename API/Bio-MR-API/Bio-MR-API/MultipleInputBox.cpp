@@ -5,44 +5,69 @@
 #include <QGridLayout>
 
 MultipleInputBox::MultipleInputBox(InputType type, QWidget* parent, Qt::WindowFlags flags)
-	: QWidget(parent, flags), m_type(type)
+	: QWidget(parent, flags)
 {
+	// Setup the layout
+	SetType(type);
+}
+
+void MultipleInputBox::SetType(InputType type)
+{
+	// Store the type that we are currently showing
+	m_type = type;
+
+	// Replace the current layout with a fresh new one
+	QLayout* temp = layout();
 	setLayout(new QGridLayout(this));
 	layout()->setContentsMargins(0, 0, 0, 0);
+	if (temp) {
+		delete temp;
+		temp = nullptr;
+	}
+	if (m_pSpinBox) {
+		delete m_pSpinBox;
+		m_pSpinBox = nullptr;
+	}
+	if (m_pLineEdit) {
+		delete m_pLineEdit;
+		m_pLineEdit = nullptr;
+	}
 
-	switch (m_type) {
-	case InputType::k_int:
-	case InputType::k_double:
+	// Only show the widget that is needed
+	if (m_type == InputType::k_int || m_type == InputType::k_double)
 	{
+		// Set up the spin box
 		m_pSpinBox = new QDoubleSpinBox(this);
-		layout()->addWidget(m_pSpinBox);
-
-		// Connect the value change
 		connect(m_pSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [&](double d) {
 			QString newValue = QString("%1").arg(d);
 			emit ValueChanged(newValue);
 		});
-		
-		// No decimals for integer, 2 for double
-		if (m_type == InputType::k_int) {
-			m_pSpinBox->setDecimals(0);
-		}
-		else {
-			m_pSpinBox->setDecimals(2);
-		}
-
-	   	break;
 	}
-	case InputType::k_string:
-	{
+	if (m_type == InputType::k_string) {
+		// Set up the line edit
 		m_pLineEdit = new QLineEdit(this);
-		layout()->addWidget(m_pLineEdit);
-
-
 		connect(m_pLineEdit, &QLineEdit::textChanged, this, [&](QString text) {
 			emit ValueChanged(text);
 		});
+	}
 
+
+	switch (m_type) {
+	case InputType::k_int:
+	{
+		layout()->addWidget(m_pSpinBox);
+		m_pSpinBox->setDecimals(0);
+		break;
+	}
+	case InputType::k_double:
+	{
+		layout()->addWidget(m_pSpinBox);
+		m_pSpinBox->setDecimals(2);
+		break;
+	}
+	case InputType::k_string:
+	{
+		layout()->addWidget(m_pLineEdit);
 		break;
 	}
 	}

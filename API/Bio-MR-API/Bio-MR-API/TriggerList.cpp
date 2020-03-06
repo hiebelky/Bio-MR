@@ -1,6 +1,7 @@
 #include "TriggerList.h"
 
 #include "Types.h"
+#include "MultipleInputBox.h"
 
 #include <QListView>
 #include <QStandardItemModel>
@@ -13,6 +14,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QDialogButtonBox>
+#include <QTabWidget>
 
 namespace{
 	QString ComparisonFucntionToQString(ComparisonType type) {
@@ -91,41 +93,93 @@ void TriggerList::SetUpTriggerWindow() {
 	QLabel* pDescription = new QLabel("Specify which sensor to watch, a threshold value, and a command to send to the game engine once the threshold is exceeded.", m_pAddTriggerWindow);
 	pDescription->setWordWrap(true);
 
-	// Create the sensor level inputs 
-	QLabel* pEventSourceLabel = new QLabel("Event Source:", m_pAddTriggerWindow);
-	m_pEventSourceInput = new QLineEdit(m_pAddTriggerWindow);
-	m_pEventSourceInput->setText("Source");
-	QLabel* pSampleNameLabel = new QLabel("Sample Name:", m_pAddTriggerWindow);
-	m_pSampleNameInput = new QLineEdit(m_pAddTriggerWindow);
-	m_pSampleNameInput->setText("Name");
-	QLabel* pFieldIdLabel = new QLabel("Field Id:", m_pAddTriggerWindow);
-	m_pFieldIndexInput = new QSpinBox(m_pAddTriggerWindow);
 
-	QLabel* pComparisonFunctionLabel = new QLabel("Comparison:", m_pAddTriggerWindow);
-	m_pComparisonFunctionInput = new QComboBox(m_pAddTriggerWindow);
-	QStringList comparisonOptions;
-	for (ComparisonType x = (ComparisonType)0; x < ComparisonType::k_count; x = (ComparisonType)((int)x + 1)) {
-		comparisonOptions << ComparisonFucntionToQString(x);
+
+	// Tab Widget - Left tab is combo boxes (Preset Sensor) 
+	//            - Right tab is manual entry (Custom Sensor)
+	QTabWidget* pTabWidget = new QTabWidget(m_pAddTriggerWindow);
+	QWidget* pPresetTab = new QWidget(pTabWidget);
+	QWidget* pCustomTab = new QWidget(pTabWidget);
+	pTabWidget->addTab(pPresetTab, "Preset Sensor");
+	pTabWidget->addTab(pCustomTab, "Custom Sensor");
+
+	// Left tab (Preset Sensor)
+	{
+
+
+
+
 	}
-	m_pComparisonFunctionInput->addItems(comparisonOptions);
 
-	QLabel* pComparisonValueLabel = new QLabel("Threshold Value:", m_pAddTriggerWindow);
-	m_pComparisonValueInput = new QLineEdit(m_pAddTriggerWindow);
-	m_pComparisonValueInput->setText("0");
+	// Right tab (Manual Entry)
+	{
+		// Create the sensor level inputs 
+		QLabel* pEventSourceLabel = new QLabel("Event Source:", m_pAddTriggerWindow);
+		m_pEventSourceInput = new QLineEdit(m_pAddTriggerWindow);
+		m_pEventSourceInput->setText("Source");
+		QLabel* pSampleNameLabel = new QLabel("Sample Name:", m_pAddTriggerWindow);
+		m_pSampleNameInput = new QLineEdit(m_pAddTriggerWindow);
+		m_pSampleNameInput->setText("Name");
+		QLabel* pFieldIdLabel = new QLabel("Field Id:", m_pAddTriggerWindow);
+		m_pFieldIndexInput = new QSpinBox(m_pAddTriggerWindow);
+
+		QLabel* pComparisonFunctionLabel = new QLabel("Comparison:", m_pAddTriggerWindow);
+		m_pComparisonFunctionInput = new QComboBox(m_pAddTriggerWindow);
+		QStringList comparisonOptions;
+		for (ComparisonType x = (ComparisonType)0; x < ComparisonType::k_count; x = (ComparisonType)((int)x + 1)) {
+			comparisonOptions << ComparisonFucntionToQString(x);
+		}
+		m_pComparisonFunctionInput->addItems(comparisonOptions);
+
+		QLabel* pComparisonValueLabel = new QLabel("Threshold Value:", m_pAddTriggerWindow);
+		m_pComparisonValueInput = new QLineEdit(m_pAddTriggerWindow);
+		m_pComparisonValueInput->setText("0");
 
 
-	QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
-	m_pParameterNameInput = new QComboBox(m_pAddTriggerWindow);
-	QLabel* pParameterValueLabel = new QLabel("Change Value:", m_pAddTriggerWindow);
-	m_pParameterValueInput = new QDoubleSpinBox();
+		QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
+		m_pParameterNameInput = new QComboBox(m_pAddTriggerWindow);
+		QLabel* pParameterValueLabel = new QLabel("Change Value:", m_pAddTriggerWindow);
+		m_pParameterValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
 
-	UpdateGameEngineParameterList();
-	UpdateGameEngineParameterValue(-1);
+		UpdateGameEngineParameterList();
+		UpdateGameEngineParameterValue(-1);
 
-	connect(m_pParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
-	connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, &TriggerList::UpdateGameEngineParameterList);
+		connect(m_pParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
+		connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, &TriggerList::UpdateGameEngineParameterList);
 
-	// Create a preview window which updates on any changes
+
+		// Layout the widget
+		QGridLayout* pGridLayout = new QGridLayout(pPresetTab);
+		pCustomTab->setLayout(pGridLayout);
+
+		pGridLayout->addWidget(pEventSourceLabel, 0, 0);
+		pGridLayout->addWidget(m_pEventSourceInput, 0, 1);
+		pGridLayout->addWidget(pSampleNameLabel, 1, 0);
+		pGridLayout->addWidget(m_pSampleNameInput, 1, 1);
+		pGridLayout->addWidget(pFieldIdLabel, 2, 0);
+		pGridLayout->addWidget(m_pFieldIndexInput, 2, 1);
+		pGridLayout->addWidget(pComparisonFunctionLabel, 3, 0);
+		pGridLayout->addWidget(m_pComparisonFunctionInput, 3, 1);
+		pGridLayout->addWidget(pComparisonValueLabel, 4, 0);
+		pGridLayout->addWidget(m_pComparisonValueInput, 4, 1);
+
+		// Spacing
+		pGridLayout->setRowMinimumHeight(5, 10);
+
+		pGridLayout->addWidget(pParameterNameLabel, 6, 0);
+		pGridLayout->addWidget(m_pParameterNameInput, 6, 1);
+		pGridLayout->addWidget(pParameterValueLabel, 7, 0);
+		pGridLayout->addWidget(m_pParameterValueInput, 7, 1);
+
+
+		pGridLayout->setColumnStretch(1, 1);
+		pGridLayout->setRowStretch(99, 1);
+	}
+
+
+
+
+	// Create the preview widget which updates when any of the boxes are changed
 	m_pPreviewTrigger = new QLabel(m_pAddTriggerWindow);
 	m_pPreviewTrigger->setAlignment(Qt::AlignCenter);
 	m_pPreviewTrigger->setFont(smallBold);
@@ -135,11 +189,12 @@ void TriggerList::SetUpTriggerWindow() {
 	connect(m_pComparisonFunctionInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pComparisonValueInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pParameterNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pParameterValueInput, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &TriggerList::UpdatePreviewText);
+	connect(m_pParameterValueInput, &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
 	UpdatePreviewText();
 
 
-	// Create the buttons
+
+	// Create the bottom navigation buttons buttons
 	QDialogButtonBox* pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
 	connect(pButtonBox->button(QDialogButtonBox::Ok), &QPushButton::clicked, this, [&] {
@@ -153,47 +208,17 @@ void TriggerList::SetUpTriggerWindow() {
 	});
 
 
-	// Layout the widget
-	QGridLayout* pGridLayout = new QGridLayout(m_pAddTriggerWindow);
-	m_pAddTriggerWindow->setLayout(pGridLayout);
-	pGridLayout->addWidget(pTitle, 0, 0, 1, -1);
-	pGridLayout->addWidget(pDescription, 1, 0, 1, -1);
-
-	// Spacing
-	pGridLayout->setRowMinimumHeight(2, 10);
-
-	//pGridLayout->addWidget(pPreviewLabel, 4, 0);
-	pGridLayout->addWidget(m_pPreviewTrigger, 4, 0, 1, -1);
-
-	// Spacing
-	pGridLayout->setRowMinimumHeight(5, 10);
-
-	pGridLayout->addWidget(pEventSourceLabel, 10, 0);
-	pGridLayout->addWidget(m_pEventSourceInput, 10, 1);
-	pGridLayout->addWidget(pSampleNameLabel, 11, 0);
-	pGridLayout->addWidget(m_pSampleNameInput, 11, 1);
-	pGridLayout->addWidget(pFieldIdLabel, 12, 0);
-	pGridLayout->addWidget(m_pFieldIndexInput, 12, 1);
-	pGridLayout->addWidget(pComparisonFunctionLabel, 13, 0);
-	pGridLayout->addWidget(m_pComparisonFunctionInput, 13, 1);
-	pGridLayout->addWidget(pComparisonValueLabel, 14, 0);
-	pGridLayout->addWidget(m_pComparisonValueInput, 14, 1);
-
-	// Spacing
-	pGridLayout->setRowMinimumHeight(20, 10);
-
-	pGridLayout->addWidget(pParameterNameLabel, 30, 0);
-	pGridLayout->addWidget(m_pParameterNameInput, 30, 1);
-	pGridLayout->addWidget(pParameterValueLabel, 31, 0);
-	pGridLayout->addWidget(m_pParameterValueInput, 31, 1);
-
-
-	pGridLayout->setColumnStretch(1, 1);
-	pGridLayout->setRowStretch(99, 1);
-
-	// Button Box
-	pGridLayout->addWidget(pButtonBox, 100, 0, 1, -1);
-
+	// Main layout
+	QVBoxLayout* pMainLayout = new QVBoxLayout(m_pAddTriggerWindow);
+	m_pAddTriggerWindow->setLayout(pMainLayout);
+	pMainLayout->addWidget(pTitle);
+	pMainLayout->addWidget(pDescription);
+	pMainLayout->addSpacing(10);
+	pMainLayout->addWidget(m_pPreviewTrigger);
+	pMainLayout->addSpacing(10);
+	pMainLayout->addWidget(pTabWidget);
+	pMainLayout->addStretch();
+	pMainLayout->addWidget(pButtonBox);
 }
 
 void TriggerList::UpdateGameEngineParameterList()
@@ -216,23 +241,28 @@ void TriggerList::UpdateGameEngineParameterValue(int index)
 
 	if (index < 0 || index > allParams.size())
 	{
-		m_pParameterValueInput->setMinimum(0);
-		m_pParameterValueInput->setValue(0);
-		m_pParameterValueInput->setMaximum(99);
+		m_pParameterValueInput->SetMinValue(0);
+		m_pParameterValueInput->SetValue(0);
+		m_pParameterValueInput->SetMaxValue(99);
 	} else {
 		GameEngineRegisterCommandDatagram& selectedParameter = allParams[index].first;
 
 		if (selectedParameter.m_type.compare("Int", Qt::CaseInsensitive) == 0) {
-			m_pParameterValueInput->setMinimum(selectedParameter.m_minVal.toInt());
-			m_pParameterValueInput->setValue(selectedParameter.m_startVal.toInt());
-			m_pParameterValueInput->setMaximum(selectedParameter.m_maxVal.toInt());
-			m_pParameterValueInput->setDecimals(0);
+			m_pParameterValueInput->SetType(InputType::k_int);
+			m_pParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
+			m_pParameterValueInput->SetValue(selectedParameter.m_startVal);
+			m_pParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
 		}
 		else if (selectedParameter.m_type.compare("Float", Qt::CaseInsensitive) == 0 || selectedParameter.m_type.compare("Double", Qt::CaseInsensitive) == 0) {
-			m_pParameterValueInput->setMinimum(selectedParameter.m_minVal.toDouble());
-			m_pParameterValueInput->setValue(selectedParameter.m_startVal.toDouble());
-			m_pParameterValueInput->setMaximum(selectedParameter.m_maxVal.toDouble());
-			m_pParameterValueInput->setDecimals(2);
+			m_pParameterValueInput->SetType(InputType::k_double);
+			m_pParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
+			m_pParameterValueInput->SetValue(selectedParameter.m_startVal);
+			m_pParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
+		}
+		else if (selectedParameter.m_type.compare("String", Qt::CaseInsensitive) == 0)
+		{
+			m_pParameterValueInput->SetType(InputType::k_string);
+			m_pParameterValueInput->SetValue(selectedParameter.m_startVal);
 		}
 	}
 }
@@ -263,7 +293,7 @@ TriggerItem* TriggerList::CreateNewTriggerItem() {
 
 	// Game engine input
 	pDescription->m_parameterName = m_pParameterNameInput->currentText();
-	pDescription->m_parameterValue = QString("%1").arg(m_pParameterValueInput->value());
+	pDescription->m_parameterValue = QString("%1").arg(m_pParameterValueInput->GetValue());
 
 	pDescription->m_controlWidget = GetSelectedGameEngineParameters().second;
 
