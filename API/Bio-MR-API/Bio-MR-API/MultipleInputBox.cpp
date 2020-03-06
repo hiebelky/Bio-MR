@@ -8,68 +8,52 @@ MultipleInputBox::MultipleInputBox(InputType type, QWidget* parent, Qt::WindowFl
 	: QWidget(parent, flags)
 {
 	// Setup the layout
+	setLayout(new QGridLayout(this));
+	layout()->setContentsMargins(0, 0, 0, 0);
+
+	// Set up the spin box
+	m_pSpinBox = new QDoubleSpinBox(this);
+	connect(m_pSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [&](double d) {
+		QString newValue = QString("%1").arg(d);
+		emit ValueChanged(newValue);
+	});
+
+	// Set up the line edit
+	m_pLineEdit = new QLineEdit(this);
+	connect(m_pLineEdit, &QLineEdit::textChanged, this, [&](QString text) {
+		emit ValueChanged(text);
+	});
+
+	// Show the correct widget
 	SetType(type);
 }
 
 void MultipleInputBox::SetType(InputType type)
 {
-	// Store the type that we are currently showing
+	// Cache the type of this widget
 	m_type = type;
 
-	// Replace the current layout with a fresh new one
-	QLayout* temp = layout();
-	setLayout(new QGridLayout(this));
-	layout()->setContentsMargins(0, 0, 0, 0);
-	if (temp) {
-		delete temp;
-		temp = nullptr;
-	}
-	if (m_pSpinBox) {
-		delete m_pSpinBox;
-		m_pSpinBox = nullptr;
-	}
-	if (m_pLineEdit) {
-		delete m_pLineEdit;
-		m_pLineEdit = nullptr;
-	}
+	// Remove all widgets from the layout and hide them
+	layout()->removeWidget(m_pSpinBox);
+	layout()->removeWidget(m_pLineEdit);
+	m_pSpinBox->hide();
+	m_pLineEdit->hide();
 
 	// Only show the widget that is needed
 	if (m_type == InputType::k_int || m_type == InputType::k_double)
 	{
-		// Set up the spin box
-		m_pSpinBox = new QDoubleSpinBox(this);
-		connect(m_pSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [&](double d) {
-			QString newValue = QString("%1").arg(d);
-			emit ValueChanged(newValue);
-		});
-	}
-	if (m_type == InputType::k_string) {
-		// Set up the line edit
-		m_pLineEdit = new QLineEdit(this);
-		connect(m_pLineEdit, &QLineEdit::textChanged, this, [&](QString text) {
-			emit ValueChanged(text);
-		});
-	}
-
-
-	switch (m_type) {
-	case InputType::k_int:
-	{
 		layout()->addWidget(m_pSpinBox);
-		m_pSpinBox->setDecimals(0);
-		break;
+		m_pSpinBox->setHidden(false);
+
+		if (m_type == InputType::k_int) {
+			m_pSpinBox->setDecimals(0);
+		} else {
+			m_pSpinBox->setDecimals(2);
+		}
 	}
-	case InputType::k_double:
-	{
-		layout()->addWidget(m_pSpinBox);
-		m_pSpinBox->setDecimals(2);
-		break;
-	}
-	case InputType::k_string:
-	{
+	else if (m_type == InputType::k_string) {
 		layout()->addWidget(m_pLineEdit);
-		break;
-	}
+		m_pLineEdit->setHidden(false);
 	}
 }
 
