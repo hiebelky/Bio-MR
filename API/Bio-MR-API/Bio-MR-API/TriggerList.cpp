@@ -130,7 +130,11 @@ void TriggerList::SetUpTriggerWindow() {
 
 		QLabel* pComparisonValueLabel = new QLabel("Threshold Value:", m_pAddTriggerWindow);
 		m_pPresetComparisonValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
-		m_pPresetComparisonValueInput->SetValue("0");
+
+		UpdateEventSourceComboBox();
+		connect(m_pPresetEventSourceInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateSampleNameComboBox);
+		connect(m_pPresetSampleNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateFieldIndexComboBox);
+		connect(m_pPresetFieldIndexInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdatePresetComarisonValueInput);
 
 
 		QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
@@ -342,6 +346,99 @@ void TriggerList::UpdateGameEngineParameterValue(int index, int tab)
 		}
 	}
 }
+
+
+
+
+
+
+void TriggerList::UpdateEventSourceComboBox() {
+
+	// Read all the names from the storage manager
+	auto& allEventSources = m_pStorageManager->GetEventSources();
+
+	QStringList names;
+	for (auto& it : allEventSources) {
+		names << it.m_name;
+	}
+
+	// Update the name input combo for this tab
+	m_pPresetEventSourceInput->clear();
+	m_pPresetEventSourceInput->addItems(names);
+
+	// Always finish by updating the sample name box
+	UpdateSampleNameComboBox();
+}
+void TriggerList::UpdateSampleNameComboBox() {
+	// Get the current index of the event sources
+	int eventSourceIndex = m_pPresetEventSourceInput->currentIndex();
+
+	if (eventSourceIndex < 0) {
+		return;
+	}
+
+	// Read all the names from the storage manager
+	auto& allSampleNames = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames;
+
+	QStringList names;
+	for (auto& it : allSampleNames) {
+		names << it.m_name;
+	}
+
+	// Update the name input combo for this tab
+	m_pPresetSampleNameInput->clear();
+	m_pPresetSampleNameInput->addItems(names);
+
+	// Always finish by updating the field index box
+	UpdateFieldIndexComboBox();
+}
+void TriggerList::UpdateFieldIndexComboBox() {
+	// Get the current index of the event sources and sample names
+	int eventSourceIndex = m_pPresetEventSourceInput->currentIndex();
+	int sampleNameIndex = m_pPresetSampleNameInput->currentIndex();
+
+	if (eventSourceIndex < 0 || sampleNameIndex < 0) {
+		return;
+	}
+
+	// Read all the names from the storage manager
+	auto& allFieldIndices = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex).m_fields;
+
+	QStringList names;
+	for (auto& it : allFieldIndices) {
+		names << it.m_name;
+	}
+
+	// Update the name input combo for this tab
+	m_pPresetFieldIndexInput->clear();
+	m_pPresetFieldIndexInput->addItems(names);
+
+	// Always finish by updating the field index box
+	UpdatePresetComarisonValueInput();
+}
+void TriggerList::UpdatePresetComarisonValueInput() {
+	// Get the current index of the event sources and sample names
+	int eventSourceIndex = m_pPresetEventSourceInput->currentIndex();
+	int sampleNameIndex = m_pPresetSampleNameInput->currentIndex();
+	int fieldIndex = m_pPresetFieldIndexInput->currentIndex();
+
+	if (eventSourceIndex < 0 || sampleNameIndex < 0 || fieldIndex < 0) {
+		return;
+	}
+
+	// Read all the names from the storage manager
+	SensorDataField& currentField = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex).m_fields.at(fieldIndex);
+
+	// Update the input widget
+	m_pPresetComparisonValueInput->SetType(currentField.m_type);
+	m_pPresetComparisonValueInput->SetMinValue(currentField.m_minVal.toDouble());
+	m_pPresetComparisonValueInput->SetMaxValue(currentField.m_maxVal.toDouble());
+}
+
+
+
+
+
 
 std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& TriggerList::GetSelectedGameEngineParameters(int tab)
 {

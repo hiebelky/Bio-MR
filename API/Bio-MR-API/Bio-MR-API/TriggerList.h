@@ -29,6 +29,12 @@ private:
 	void UpdateGameEngineParameterList(int tab);
 	void UpdateGameEngineParameterValue(int index, int tab);
 
+	// Update the combo box options for the preset sensor selection
+	void UpdateEventSourceComboBox();
+	void UpdateSampleNameComboBox();
+	void UpdateFieldIndexComboBox();
+	void UpdatePresetComarisonValueInput();
+
 
 	std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& GetSelectedGameEngineParameters(int tab);
 	void UpdatePreviewText();
