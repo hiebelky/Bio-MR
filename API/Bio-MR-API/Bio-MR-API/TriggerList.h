@@ -25,9 +25,12 @@ public:
 private:
 	void SetUpTriggerWindow();
 
-	void UpdateGameEngineParameterList();
-	void UpdateGameEngineParameterValue(int index);
-	std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& GetSelectedGameEngineParameters();
+	// Update the game engine parameter selection boxes
+	void UpdateGameEngineParameterList(int tab);
+	void UpdateGameEngineParameterValue(int index, int tab);
+
+
+	std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& GetSelectedGameEngineParameters(int tab);
 	void UpdatePreviewText();
 
 	// Returns a trigger item created with the settings displayed in the preview
@@ -42,29 +45,31 @@ private:
 	QWidget* m_pAddTriggerWindow = nullptr;
 
 	// Keeps track of which tab we are on
-	bool m_isCustom = false;
+	int m_currentTab;
 
 	// *************************
 	// Preset sensor input
-	//**************************
+	// *************************
 	QComboBox* m_pPresetEventSourceInput = nullptr;
 	QComboBox* m_pPresetSampleNameInput = nullptr;
 	QComboBox* m_pPresetFieldIndexInput = nullptr;
 	QComboBox* m_pPresetComparisonFunctionInput = nullptr;
 	MultipleInputBox* m_pPresetComparisonValueInput = nullptr;
-	QComboBox* m_pPresetParameterNameInput = nullptr;
-	MultipleInputBox* m_pPresetParameterValueInput = nullptr;
 
 	// *************************
 	// Custom sensor input
-	//**************************
+	// *************************
 	QLineEdit* m_pCustomEventSourceInput = nullptr;
 	QLineEdit* m_pCustomSampleNameInput = nullptr;
 	QSpinBox* m_pCustomFieldIndexInput = nullptr;
 	QComboBox* m_pCustomComparisonFunctionInput = nullptr;
 	QLineEdit* m_pCustomComparisonValueInput = nullptr;
-	QComboBox* m_pCustomParameterNameInput = nullptr;
-	MultipleInputBox* m_pCustomParameterValueInput = nullptr;
+
+	// *************************
+	// Game Engine Parameter Input
+	// *************************
+	QComboBox* m_pParameterNameInputs[2] = { nullptr, nullptr };
+	MultipleInputBox* m_pParameterValueInputs[2] = { nullptr, nullptr };
 
 
 	// Preview window

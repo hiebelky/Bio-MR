@@ -105,11 +105,13 @@ void TriggerList::SetUpTriggerWindow() {
 
 	connect(pTabWidget, &QTabWidget::currentChanged, this, [&](int index) {
 		// Keep track of which window we're on
-		m_isCustom = (bool)index;
+		m_currentTab = index;
 	});
 
 	// Left tab (Preset Sensor)
 	{
+		m_currentTab = 0;
+
 		// Create the sensor level inputs 
 		QLabel* pEventSourceLabel = new QLabel("Event Source:", m_pAddTriggerWindow);
 		m_pPresetEventSourceInput = new QComboBox(m_pAddTriggerWindow);
@@ -132,12 +134,16 @@ void TriggerList::SetUpTriggerWindow() {
 
 
 		QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
-		m_pPresetParameterNameInput = new QComboBox(m_pAddTriggerWindow);
+		m_pParameterNameInputs[m_currentTab] = new QComboBox(m_pAddTriggerWindow);
 		QLabel* pParameterValueLabel = new QLabel("Change Value:", m_pAddTriggerWindow);
-		m_pPresetParameterValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
+		m_pParameterValueInputs[m_currentTab] = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
 
-		connect(m_pPresetParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
-		connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, &TriggerList::UpdateGameEngineParameterList);
+		UpdateGameEngineParameterList(m_currentTab);
+		UpdateGameEngineParameterValue(-1, m_currentTab);
+
+		connect(m_pParameterNameInputs[m_currentTab], QOverload<int>::of(&QComboBox::currentIndexChanged), this, [&](int index) {
+			UpdateGameEngineParameterValue(index, 0);
+		});
 
 
 		// Layout the widget
@@ -159,9 +165,9 @@ void TriggerList::SetUpTriggerWindow() {
 		pGridLayout->setRowMinimumHeight(5, 10);
 
 		pGridLayout->addWidget(pParameterNameLabel, 6, 0);
-		pGridLayout->addWidget(m_pPresetParameterNameInput, 6, 1);
+		pGridLayout->addWidget(m_pParameterNameInputs[m_currentTab], 6, 1);
 		pGridLayout->addWidget(pParameterValueLabel, 7, 0);
-		pGridLayout->addWidget(m_pPresetParameterValueInput, 7, 1);
+		pGridLayout->addWidget(m_pParameterValueInputs[m_currentTab], 7, 1);
 
 
 		pGridLayout->setColumnStretch(1, 1);
@@ -170,6 +176,8 @@ void TriggerList::SetUpTriggerWindow() {
 
 	// Right tab (Manual Entry)
 	{
+		m_currentTab = 1;
+
 		// Create the sensor level inputs 
 		QLabel* pEventSourceLabel = new QLabel("Event Source:", m_pAddTriggerWindow);
 		m_pCustomEventSourceInput = new QLineEdit(m_pAddTriggerWindow);
@@ -194,12 +202,16 @@ void TriggerList::SetUpTriggerWindow() {
 
 
 		QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
-		m_pCustomParameterNameInput = new QComboBox(m_pAddTriggerWindow);
+		m_pParameterNameInputs[m_currentTab] = new QComboBox(m_pAddTriggerWindow);
 		QLabel* pParameterValueLabel = new QLabel("Change Value:", m_pAddTriggerWindow);
-		m_pCustomParameterValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
+		m_pParameterValueInputs[m_currentTab] = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);\
 
-		connect(m_pCustomParameterNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateGameEngineParameterValue);
-		connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, &TriggerList::UpdateGameEngineParameterList);
+		UpdateGameEngineParameterList(m_currentTab);
+		UpdateGameEngineParameterValue(-1, m_currentTab);
+
+		connect(m_pParameterNameInputs[m_currentTab], QOverload<int>::of(&QComboBox::currentIndexChanged), this, [&](int index) {
+			UpdateGameEngineParameterValue(index, 1);
+		});
 
 
 		// Layout the widget
@@ -221,18 +233,23 @@ void TriggerList::SetUpTriggerWindow() {
 		pGridLayout->setRowMinimumHeight(5, 10);
 
 		pGridLayout->addWidget(pParameterNameLabel, 6, 0);
-		pGridLayout->addWidget(m_pCustomParameterNameInput, 6, 1);
+		pGridLayout->addWidget(m_pParameterNameInputs[m_currentTab], 6, 1);
 		pGridLayout->addWidget(pParameterValueLabel, 7, 0);
-		pGridLayout->addWidget(m_pCustomParameterValueInput, 7, 1);
+		pGridLayout->addWidget(m_pParameterValueInputs[m_currentTab], 7, 1);
 
 
 		pGridLayout->setColumnStretch(1, 1);
 		pGridLayout->setRowStretch(99, 1);
 	}
 
-	// Initialize the values
-	UpdateGameEngineParameterList();
-	UpdateGameEngineParameterValue(-1);
+	// Make sure to update the parameter lists when the storage manager gets new game engine parameters
+	connect(m_pStorageManager, &StorageManager::NewGameEngineParameter, this, [&] {
+		UpdateGameEngineParameterList(0);
+		UpdateGameEngineParameterList(1);
+	});
+
+	// Reset the current tab
+	m_currentTab = pTabWidget->currentIndex();
 
 
 	// Create the preview widget which updates when any of the boxes are changed
@@ -244,8 +261,8 @@ void TriggerList::SetUpTriggerWindow() {
 	connect(m_pCustomFieldIndexInput, QOverload<int>::of(&QSpinBox::valueChanged), this, &TriggerList::UpdatePreviewText);
 	connect(m_pCustomComparisonFunctionInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pCustomComparisonValueInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pCustomParameterNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
-	connect(m_pCustomParameterValueInput, &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pParameterNameInputs[1], &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pParameterValueInputs[1], &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
 	UpdatePreviewText();
 
 
@@ -277,7 +294,9 @@ void TriggerList::SetUpTriggerWindow() {
 	pMainLayout->addWidget(pButtonBox);
 }
 
-void TriggerList::UpdateGameEngineParameterList()
+
+
+void TriggerList::UpdateGameEngineParameterList(int tab)
 {
 	auto& allParams = m_pStorageManager->GetGameEngineParameters();
 
@@ -286,47 +305,48 @@ void TriggerList::UpdateGameEngineParameterList()
 	for (auto& it : allParams) {
 		names << it.first.m_parameterName;
 	}
-	
-	m_pCustomParameterNameInput->clear();
-	m_pCustomParameterNameInput->addItems(names);
+
+	// Update the name input combo for this tab
+	m_pParameterNameInputs[tab]->clear();
+	m_pParameterNameInputs[tab]->addItems(names);
 }
 
-void TriggerList::UpdateGameEngineParameterValue(int index)
+void TriggerList::UpdateGameEngineParameterValue(int index, int tab)
 {
 	auto& allParams = m_pStorageManager->GetGameEngineParameters();
 
 	if (index < 0 || index > allParams.size())
 	{
-		m_pCustomParameterValueInput->SetMinValue(0);
-		m_pCustomParameterValueInput->SetValue(0);
-		m_pCustomParameterValueInput->SetMaxValue(99);
+		m_pParameterValueInputs[tab]->SetMinValue(0);
+		m_pParameterValueInputs[tab]->SetValue(0);
+		m_pParameterValueInputs[tab]->SetMaxValue(99);
 	} else {
 		GameEngineRegisterCommandDatagram& selectedParameter = allParams[index].first;
 
 		if (selectedParameter.m_type.compare("Int", Qt::CaseInsensitive) == 0) {
-			m_pCustomParameterValueInput->SetType(InputType::k_int);
-			m_pCustomParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
-			m_pCustomParameterValueInput->SetValue(selectedParameter.m_startVal);
-			m_pCustomParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
+			m_pParameterValueInputs[tab]->SetType(InputType::k_int);
+			m_pParameterValueInputs[tab]->SetMinValue(selectedParameter.m_minVal.toDouble());
+			m_pParameterValueInputs[tab]->SetValue(selectedParameter.m_startVal);
+			m_pParameterValueInputs[tab]->SetMaxValue(selectedParameter.m_maxVal.toDouble());
 		}
 		else if (selectedParameter.m_type.compare("Float", Qt::CaseInsensitive) == 0 || selectedParameter.m_type.compare("Double", Qt::CaseInsensitive) == 0) {
-			m_pCustomParameterValueInput->SetType(InputType::k_double);
-			m_pCustomParameterValueInput->SetMinValue(selectedParameter.m_minVal.toDouble());
-			m_pCustomParameterValueInput->SetValue(selectedParameter.m_startVal);
-			m_pCustomParameterValueInput->SetMaxValue(selectedParameter.m_maxVal.toDouble());
+			m_pParameterValueInputs[tab]->SetType(InputType::k_double);
+			m_pParameterValueInputs[tab]->SetMinValue(selectedParameter.m_minVal.toDouble());
+			m_pParameterValueInputs[tab]->SetValue(selectedParameter.m_startVal);
+			m_pParameterValueInputs[tab]->SetMaxValue(selectedParameter.m_maxVal.toDouble());
 		}
 		else if (selectedParameter.m_type.compare("String", Qt::CaseInsensitive) == 0)
 		{
-			m_pCustomParameterValueInput->SetType(InputType::k_string);
-			m_pCustomParameterValueInput->SetValue(selectedParameter.m_startVal);
+			m_pParameterValueInputs[tab]->SetType(InputType::k_string);
+			m_pParameterValueInputs[tab]->SetValue(selectedParameter.m_startVal);
 		}
 	}
 }
 
-std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& TriggerList::GetSelectedGameEngineParameters()
+std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& TriggerList::GetSelectedGameEngineParameters(int tab)
 {
 	auto& allParams = m_pStorageManager->GetGameEngineParameters();
-	int selectedIndex = m_pCustomParameterNameInput->currentIndex();
+	int selectedIndex = m_pParameterNameInputs[tab]->currentIndex();
 
 	if (selectedIndex >= allParams.size() || selectedIndex < 0) {
 		return std::make_pair(GameEngineRegisterCommandDatagram(), (ParameterControlWidget*)nullptr);
@@ -348,10 +368,10 @@ TriggerItem* TriggerList::CreateNewTriggerItem() {
 	pDescription->m_comparisonValue = m_pCustomComparisonValueInput->text();
 
 	// Game engine input
-	pDescription->m_parameterName = m_pCustomParameterNameInput->currentText();
-	pDescription->m_parameterValue = QString("%1").arg(m_pCustomParameterValueInput->GetValue());
+	pDescription->m_parameterName = m_pParameterNameInputs[m_currentTab]->currentText();
+	pDescription->m_parameterValue = QString("%1").arg(m_pParameterValueInputs[m_currentTab]->GetValue());
 
-	pDescription->m_controlWidget = GetSelectedGameEngineParameters().second;
+	pDescription->m_controlWidget = GetSelectedGameEngineParameters(m_currentTab).second;
 
 	return new TriggerItem(pDescription);
 }
