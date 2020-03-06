@@ -132,9 +132,9 @@ void TriggerList::SetUpTriggerWindow() {
 		m_pPresetComparisonValueInput = new MultipleInputBox(InputType::k_int, m_pAddTriggerWindow);
 
 		UpdateEventSourceComboBox();
-		connect(m_pPresetEventSourceInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateSampleNameComboBox);
-		connect(m_pPresetSampleNameInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdateFieldIndexComboBox);
-		connect(m_pPresetFieldIndexInput, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TriggerList::UpdatePresetComarisonValueInput);
+		connect(m_pPresetEventSourceInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdateSampleNameComboBox);
+		connect(m_pPresetSampleNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdateFieldIndexComboBox);
+		connect(m_pPresetFieldIndexInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePresetComarisonValueInput);
 
 
 		QLabel* pParameterNameLabel = new QLabel("Change Parameter:", m_pAddTriggerWindow);
@@ -260,11 +260,21 @@ void TriggerList::SetUpTriggerWindow() {
 	m_pPreviewTrigger = new QLabel(m_pAddTriggerWindow);
 	m_pPreviewTrigger->setAlignment(Qt::AlignCenter);
 	m_pPreviewTrigger->setFont(smallBold);
+
+	connect(m_pPresetEventSourceInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pPresetSampleNameInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pPresetFieldIndexInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pPresetComparisonFunctionInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pPresetComparisonValueInput, &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
+
 	connect(m_pCustomEventSourceInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pCustomSampleNameInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pCustomFieldIndexInput, QOverload<int>::of(&QSpinBox::valueChanged), this, &TriggerList::UpdatePreviewText);
 	connect(m_pCustomComparisonFunctionInput, &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pCustomComparisonValueInput, &QLineEdit::textChanged, this, &TriggerList::UpdatePreviewText);
+
+	connect(m_pParameterNameInputs[0], &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
+	connect(m_pParameterValueInputs[0], &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pParameterNameInputs[1], &QComboBox::currentTextChanged, this, &TriggerList::UpdatePreviewText);
 	connect(m_pParameterValueInputs[1], &MultipleInputBox::ValueChanged, this, &TriggerList::UpdatePreviewText);
 	UpdatePreviewText();
@@ -457,12 +467,31 @@ TriggerItem* TriggerList::CreateNewTriggerItem() {
 	TriggerDescription* pDescription = new TriggerDescription();
 
 	// Sensor input
-	pDescription->m_eventSource = m_pCustomEventSourceInput->text();
-	pDescription->m_sampleName = m_pCustomSampleNameInput->text();
-	pDescription->m_fieldIndex = m_pCustomFieldIndexInput->value();
+	if (m_currentTab == 0) {
+		int eventSourceIndex = m_pPresetEventSourceInput->currentIndex();
+		int sampleNameIndex = m_pPresetSampleNameInput->currentIndex();
+		int fieldIndex = m_pPresetFieldIndexInput->currentIndex();
+		EventSource& eventSource = m_pStorageManager->GetEventSources().at(eventSourceIndex);
+		SampleName& sampleName = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex);
+		SensorDataField& currentField = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex).m_fields.at(fieldIndex);
 
-	pDescription->m_comparisionFunction = (ComparisonType)m_pCustomComparisonFunctionInput->currentIndex();
-	pDescription->m_comparisonValue = m_pCustomComparisonValueInput->text();
+		pDescription->m_eventSource = eventSource.m_name;
+		pDescription->m_sampleName = sampleName.m_name;
+		pDescription->m_fieldName = currentField.m_name;
+		pDescription->m_fieldIndex = currentField.m_index;
+
+		pDescription->m_comparisionFunction = (ComparisonType)m_pPresetComparisonFunctionInput->currentIndex();
+		pDescription->m_comparisonValue = m_pPresetComparisonValueInput->GetValue();
+	}
+	else {
+		pDescription->m_eventSource = m_pCustomEventSourceInput->text();
+		pDescription->m_sampleName = m_pCustomSampleNameInput->text();
+		pDescription->m_fieldName = QString();
+		pDescription->m_fieldIndex = m_pCustomFieldIndexInput->value();
+
+		pDescription->m_comparisionFunction = (ComparisonType)m_pCustomComparisonFunctionInput->currentIndex();
+		pDescription->m_comparisonValue = m_pCustomComparisonValueInput->text();
+	}
 
 	// Game engine input
 	pDescription->m_parameterName = m_pParameterNameInputs[m_currentTab]->currentText();
@@ -489,6 +518,7 @@ void TriggerList::UpdatePreviewText()
 TriggerItem::TriggerItem(TriggerDescription* desc)
 	: QStandardItem(), m_pDescription(desc)
 {
+	if (desc->m_fieldName.isEmpty()) {
 	QString objectText = QString("If %1::%2[%3] %4 %5, set %6 to %7")
 		.arg(desc->m_eventSource)
 		.arg(desc->m_sampleName)
@@ -498,6 +528,19 @@ TriggerItem::TriggerItem(TriggerDescription* desc)
 		.arg(desc->m_parameterName)
 		.arg(desc->m_parameterValue);
 	setText(objectText);
+}
+	else {
+		QString objectText = QString("If %1::%2::%3 %4 %5, set %6 to %7")
+			.arg(desc->m_eventSource)
+			.arg(desc->m_sampleName)
+			.arg(desc->m_fieldName)
+			.arg(ComparisonFucntionToQString(desc->m_comparisionFunction))
+			.arg(desc->m_comparisonValue)
+			.arg(desc->m_parameterName)
+			.arg(desc->m_parameterValue);
+		setText(objectText);
+	}
+
 }
 
 TriggerItem::~TriggerItem() {
