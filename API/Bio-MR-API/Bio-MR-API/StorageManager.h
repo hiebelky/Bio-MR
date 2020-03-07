@@ -3,7 +3,6 @@
 #include "Types.h"
 
 #include <vector>
-#include <set>
 
 #include <QString>
 #include <QObject>
@@ -11,69 +10,39 @@
 // Forward declare
 class ParameterControlWidget;
 
-/*struct DataField {
+
+struct SensorDataField  {
 	QString m_name;
-};*/
-
-/*bool operator== (const DataField* lhs, const DataField* rhs)
-{
-	return lhs->m_name.compare(rhs->m_name) == 0;
-}
-
-bool operator< (const DataField& lhs, const DataField& rhs)
-{
-	// Maybe wrong
-	return lhs.m_name.compare(rhs.m_name) < 0;
-}
-
-bool comparison(const DataField* lhs, const DataField* rhs) {
-	return lhs->m_name.compare(rhs->m_name) > 0;
-}*/
-
-/*template<>
-struct std::less<DataField*>
-{
-	bool operator()(const DataField&& lhs, const DataField&& rhs) const
-	{
-		return lhs.m_name.compare(rhs.m_name) > 0;
-	}
+	InputType m_type;
+	int m_index;
+	QString m_minVal;
+	QString m_maxVal;
 };
 
-template <class T>
-struct GameEngineParameterSet : DataField {
-	T m_minVal;
-	T m_startVal;
-	T m_maxVal;
-	bool m_isButton;
+struct SampleName {
+	QString m_name;
+	std::vector<SensorDataField> m_fields;
 };
 
-template <class T>
-struct SensorDataField : DataField {
-	int m_indexInRawString;
-	T m_minVal;
-	T m_maxVal;
+struct EventSource {
+	QString m_name;
+	std::vector<SampleName> m_sampleNames;
 };
-
-struct SampleName : DataField {
-	// Actually std::vector<SensorDataField*>
-	std::set<DataField*> m_fields;
-};
-
-struct EventSource : DataField {
-	std::set<SampleName> m_sampleNames;
-};*/
 
 class StorageManager : public QObject{
 	Q_OBJECT
 public:
 	StorageManager();
 
-	// Add/retrieve
-	//template <class T>
-	//void AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, int dataFieldIndexInRawData, T minVal, T maxVal);
+	// Sensor information interface
+	void AddSensorDataField(QString& eventSource, QString& sampleName, QString& dataField, QString& type, int dataFieldIndexInRawData, QString& minVal, QString& maxVal);
+	std::vector<EventSource>& GetEventSources();
+
+	// Game Engine parameter interface
 	void AddGameEngineParameter(GameEngineRegisterCommandDatagram& parameter, ParameterControlWidget* widget);
 	std::vector<std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>>& GetGameEngineParameters();
 
+	// Trigger Interface
 	void AddTrigger(TriggerDescription* desc);
 	void RemoveTrigger(TriggerDescription* desc);
 	std::vector<TriggerDescription*>& GetAllTriggers();
@@ -82,9 +51,12 @@ signals:
 	void NewGameEngineParameter();
 
 private:
+	// Stores all the current triggers
 	std::vector<TriggerDescription*> m_triggers;
+
+	// Stores all the game engine parameters and their creation info
 	std::vector<std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>> m_gameEngineParameters;
 
-	// Currently unused
-	//std::set<EventSource> m_eventSources;
+	// Stores all the preset sensor information
+	std::vector<EventSource> m_eventSources;
 };

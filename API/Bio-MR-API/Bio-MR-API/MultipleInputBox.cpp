@@ -2,49 +2,58 @@
 
 #include <QDoubleSpinBox>
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QHBoxLayout>
 
 MultipleInputBox::MultipleInputBox(InputType type, QWidget* parent, Qt::WindowFlags flags)
-	: QWidget(parent, flags), m_type(type)
+	: QWidget(parent, flags)
 {
-	setLayout(new QGridLayout(this));
+	// Setup the layout
+	setLayout(new QHBoxLayout(this));
 	layout()->setContentsMargins(0, 0, 0, 0);
 
-	switch (m_type) {
-	case InputType::k_int:
-	case InputType::k_double:
-	{
-		m_pSpinBox = new QDoubleSpinBox(this);
-		layout()->addWidget(m_pSpinBox);
+	// Set up the spin box
+	m_pSpinBox = new QDoubleSpinBox(this);
+	connect(m_pSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [&](double d) {
+		QString newValue = QString("%1").arg(d);
+		emit ValueChanged(newValue);
+	});
 
-		// Connect the value change
-		connect(m_pSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [&](double d) {
-			QString newValue = QString("%1").arg(d);
-			emit ValueChanged(newValue);
-		});
-		
-		// No decimals for integer, 2 for double
+	// Set up the line edit
+	m_pLineEdit = new QLineEdit(this);
+	connect(m_pLineEdit, &QLineEdit::textChanged, this, [&](QString text) {
+		emit ValueChanged(text);
+	});
+
+	// Show the correct widget
+	SetType(type);
+}
+
+void MultipleInputBox::SetType(InputType type)
+{
+	// Cache the type of this widget
+	m_type = type;
+
+	// Remove all widgets from the layout and hide them
+	layout()->removeWidget(m_pSpinBox);
+	layout()->removeWidget(m_pLineEdit);
+	m_pSpinBox->hide();
+	m_pLineEdit->hide();
+
+	// Only show the widget that is needed
+	if (m_type == InputType::k_int || m_type == InputType::k_double)
+	{
+		layout()->addWidget(m_pSpinBox);
+		m_pSpinBox->setHidden(false);
+
 		if (m_type == InputType::k_int) {
 			m_pSpinBox->setDecimals(0);
-		}
-		else {
+		} else {
 			m_pSpinBox->setDecimals(2);
 		}
-
-	   	break;
 	}
-	case InputType::k_string:
-	{
-		m_pLineEdit = new QLineEdit(this);
+	else if (m_type == InputType::k_string) {
 		layout()->addWidget(m_pLineEdit);
-
-
-		connect(m_pLineEdit, &QLineEdit::textChanged, this, [&](QString text) {
-			emit ValueChanged(text);
-		});
-
-		break;
-	}
+		m_pLineEdit->setHidden(false);
 	}
 }
 

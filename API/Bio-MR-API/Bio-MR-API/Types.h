@@ -47,6 +47,7 @@ struct TriggerDescription {
 	// Sensor Values
 	QString m_eventSource;
 	QString m_sampleName;
+	QString m_fieldName;
 	int m_fieldIndex;
 
 	ComparisonType m_comparisionFunction;

@@ -56,10 +56,10 @@
     <QtMoc Include="TriggerList.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="StorageManager.h">
+    <QtMoc Include="MultipleInputBox.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="MultipleInputBox.h">
+    <QtMoc Include="StorageManager.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

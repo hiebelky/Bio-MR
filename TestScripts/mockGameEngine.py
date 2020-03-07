@@ -20,3 +20,7 @@ for i in range(1):
 MESSAGE = "RegisterCommand;Fetch Quest;True;Int;1;3;100;" 
 for i in range(1):
     sock.sendto(MESSAGE.encode('utf-8'), (UDP_IP, UDP_PORT))
+
+MESSAGE = "RegisterCommand;String Input;False;String;0;Test;0;" 
+for i in range(1):
+    sock.sendto(MESSAGE.encode('utf-8'), (UDP_IP, UDP_PORT))
