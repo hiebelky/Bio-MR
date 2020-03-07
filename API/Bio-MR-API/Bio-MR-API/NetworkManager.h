@@ -24,6 +24,11 @@ class NetworkManager : public QObject {
 public:
 	NetworkManager(QObject* parent = nullptr);
 
+	inline int GetIMotionsRecievedDatagramCount() { return m_iMotionsRecievedDatagramCounter; }
+	inline int GetIMotionsSentDatagramCount() { return m_iMotionsSentDatagramCounter; }
+	inline int GetGameEngineRecievedDatagramCount() { return m_gameEngineRecievedDatagramCounter; }
+	inline int GetGameEngineSentDatagramCount() { return m_gameEngineSentDatagramCounter; }
+
 public slots:
 	void SendGameEngineDatagram(QString& datagram);
 	void SendIMotionsDatagram(QString& datagram);
@@ -31,6 +36,8 @@ public slots:
 signals:
 	void registerGameEngineCommand(GameEngineRegisterCommandDatagram& newCommand);
 	void imotionsDataRecieved(IMotionsDatagram& newDatagram);
+
+	void datagramCountChanged();
 
 private:
 	void ReadImotionsDatagrams();
@@ -45,6 +52,12 @@ private:
 	QUdpSocket* m_pIMotionsSender = nullptr;
 	QUdpSocket* m_pGameEngineListener = nullptr;
 	QUdpSocket* m_pGameEngineSender = nullptr;
+
+	// One counter for each socket
+	int m_iMotionsRecievedDatagramCounter = 0;
+	int m_iMotionsSentDatagramCounter = 0;
+	int m_gameEngineRecievedDatagramCounter = 0;
+	int m_gameEngineSentDatagramCounter = 0;
 
 	// Loggers to write packets
 	QFile* m_pIMotionsLog;

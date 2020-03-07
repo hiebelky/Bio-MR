@@ -4,26 +4,69 @@
 #include "ParameterControlWidget.h"
 #include "StorageManager.h"
 #include "TriggerList.h"
+#include "DatagramCounter.h"
+
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QFrame>
 
 Biomr::Biomr(QWidget* parent)
-	: QMainWindow(parent)
+	: QWidget(parent)
 {
-	ui.setupUi(this);
-
 	// Set up the network manager
 	m_pNetworkManager = new NetworkManager(this);
 	connect(m_pNetworkManager, &NetworkManager::registerGameEngineCommand, this, &Biomr::AddParameterControlWidget);
+	connect(m_pNetworkManager, &NetworkManager::imotionsDataRecieved, this, &Biomr::HandleAutomaticTriggers);
 
 	// Set up the storage manager
 	m_pStorageManager = new StorageManager();
 
-	// Set up the automatic trigger reader
-	TriggerList* pTriggerList = new TriggerList(m_pStorageManager, this);
-	int lastIndex = ui.triggerLayout->count() - 1;
-	ui.triggerLayout->insertWidget(lastIndex, pTriggerList);
 
-	// Set up a function to handle automatic triggers
-	connect(m_pNetworkManager, &NetworkManager::imotionsDataRecieved, this, &Biomr::HandleAutomaticTriggers);
+	// Set up the layouts
+	m_pMainLayout = new QGridLayout(this);
+	setLayout(m_pMainLayout);
+
+	m_pAutomaticTriggerLayout = new QVBoxLayout(this);
+	m_pManualControlLayout = new QVBoxLayout(this);
+	DatagramCounter* pDatagramCounter = new DatagramCounter(m_pNetworkManager, this);
+	QFrame* pHorizontalDivider = new QFrame(this);
+	pHorizontalDivider->setLineWidth(1);
+	pHorizontalDivider->setFrameShape(QFrame::HLine);
+	pHorizontalDivider->setFrameShadow(QFrame::Sunken);
+	QFrame* pVerticalDivider = new QFrame(this);
+	pVerticalDivider->setLineWidth(1);
+	pVerticalDivider->setFrameShape(QFrame::VLine);
+	pVerticalDivider->setFrameShadow(QFrame::Sunken);
+
+	// Build the main layout
+	m_pMainLayout->addLayout(m_pAutomaticTriggerLayout, 0, 0);
+	m_pMainLayout->addWidget(pVerticalDivider, 0, 1);
+	m_pMainLayout->addLayout(m_pManualControlLayout, 0, 2);
+	m_pMainLayout->addWidget(pHorizontalDivider, 1, 0, 1, -1);
+	m_pMainLayout->addWidget(pDatagramCounter, 2, 0, 1, -1);
+
+
+	// Create a bold font
+	QFont boldFont = font();
+	boldFont.setBold(true);
+	boldFont.setPointSize(12);
+
+	// Set up the automatic trigger side
+	QLabel* pAutomaticLabel = new QLabel("Automatic Triggers");
+	pAutomaticLabel->setFont(boldFont);
+	pAutomaticLabel->setAlignment(Qt::AlignCenter);
+	TriggerList* pTriggerList = new TriggerList(m_pStorageManager, this);
+	m_pAutomaticTriggerLayout->addWidget(pAutomaticLabel);
+	m_pAutomaticTriggerLayout->addWidget(pTriggerList);
+	m_pAutomaticTriggerLayout->addStretch();
+
+	// Set up the manual control side
+	QLabel* pManualLabel = new QLabel("Manual Control");
+	pManualLabel->setFont(boldFont);
+	pManualLabel->setAlignment(Qt::AlignCenter);
+	m_pManualControlLayout->addWidget(pManualLabel);
+	m_pManualControlLayout->addStretch();
 }
 
 
@@ -43,8 +86,8 @@ void Biomr::AddParameterControlWidget(GameEngineRegisterCommandDatagram& params)
 	// Add the new widget to the layout.
 	// Place it in the 2nd to last position.
 	// The last position is a resizable vertical spacer.
-	int lastIndex = ui.manualControlLayout->count() - 1;
-	ui.manualControlLayout->insertWidget(lastIndex, pTempControlWidget);
+	int lastIndex = m_pManualControlLayout->count() - 1;
+	m_pManualControlLayout->insertWidget(lastIndex, pTempControlWidget);
 }
 
 

@@ -85,6 +85,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Biomr.cpp" />
+    <ClCompile Include="DatagramCounter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MultipleInputBox.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
@@ -96,12 +97,6 @@
     <QtMoc Include="Biomr.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="Biomr.ui" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtRcc Include="Biomr.qrc" />
-  </ItemGroup>
-  <ItemGroup>
     <QtMoc Include="NetworkManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +106,7 @@
     <QtMoc Include="StorageManager.h" />
     <QtMoc Include="TriggerList.h" />
     <QtMoc Include="MultipleInputBox.h" />
+    <QtMoc Include="DatagramCounter.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
