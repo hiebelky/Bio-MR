@@ -1,15 +1,18 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
-#include "ui_Biomr.h"
 #include "Types.h"
+
+#include <QWidget>
 
 // Forward Declare
 class NetworkManager;
 class StorageManager;
 
+class QGridLayout;
+class QVBoxLayout;
 
-class Biomr : public QMainWindow
+
+class Biomr : public QWidget
 {
 	Q_OBJECT
 
@@ -21,8 +24,13 @@ public slots:
 	void HandleAutomaticTriggers(IMotionsDatagram& datagram);
 
 private:
-	Ui::BiomrClass ui;
+	//Ui::BiomrClass ui;
 
 	NetworkManager* m_pNetworkManager = nullptr;
 	StorageManager* m_pStorageManager = nullptr;
+
+
+	QGridLayout* m_pMainLayout = nullptr;
+	QVBoxLayout* m_pAutomaticTriggerLayout = nullptr;
+	QVBoxLayout* m_pManualControlLayout = nullptr;
 };

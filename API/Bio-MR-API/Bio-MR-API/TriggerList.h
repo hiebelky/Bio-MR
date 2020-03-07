@@ -36,7 +36,7 @@ private:
 	void UpdatePresetComarisonValueInput();
 
 
-	std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& GetSelectedGameEngineParameters(int tab);
+	std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*> GetSelectedGameEngineParameters(int tab);
 	void UpdatePreviewText();
 
 	// Returns a trigger item created with the settings displayed in the preview

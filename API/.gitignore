@@ -407,3 +407,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+
+# Manual files
+Bio-MR-API/Bio-MR-API/game_engine_datagram_log.txt
+Bio-MR-API/Bio-MR-API/imotions_datagram_log.txt

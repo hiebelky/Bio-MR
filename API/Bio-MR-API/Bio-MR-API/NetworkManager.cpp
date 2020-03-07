@@ -41,6 +41,9 @@ void NetworkManager::ReadImotionsDatagrams()
 	{
 		QNetworkDatagram datagram = m_pIMotionsListener->receiveDatagram();
 		ProcessImotionsDatagram(datagram);
+
+		m_iMotionsRecievedDatagramCounter++;
+		emit datagramCountChanged();
 	}
 }
 void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
@@ -86,6 +89,9 @@ void NetworkManager::ReadGameEngineDatagrams()
 	{
 		QNetworkDatagram datagram = m_pGameEngineListener->receiveDatagram();
 		ProcessGameEngineDatagram(datagram);
+		
+		m_gameEngineRecievedDatagramCounter++;
+		emit datagramCountChanged();
 	}
 }
 void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
@@ -139,6 +145,9 @@ void NetworkManager::SendGameEngineDatagram(QString& datagram)
 {
 	QByteArray& rawData = datagram.toUtf8();
 	m_pGameEngineSender->writeDatagram(rawData, QHostAddress::LocalHost, SEND_TO_GAME_ENGINE_PORT);
+
+	m_gameEngineSentDatagramCounter++;
+	emit datagramCountChanged();
 }
 
 
@@ -149,4 +158,7 @@ void NetworkManager::SendIMotionsDatagram(QString& datagram)
 {
 	QByteArray& rawData = datagram.toUtf8();
 	m_pIMotionsSender->writeDatagram(rawData, QHostAddress::LocalHost, SEND_TO_IMOTIONS_PORT);
+
+	m_iMotionsSentDatagramCounter++;
+	emit datagramCountChanged();
 }

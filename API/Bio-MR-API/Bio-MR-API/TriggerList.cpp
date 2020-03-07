@@ -455,7 +455,7 @@ void TriggerList::UpdatePresetComarisonValueInput() {
 
 
 
-std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*>& TriggerList::GetSelectedGameEngineParameters(int tab)
+std::pair<GameEngineRegisterCommandDatagram, ParameterControlWidget*> TriggerList::GetSelectedGameEngineParameters(int tab)
 {
 	auto& allParams = m_pStorageManager->GetGameEngineParameters();
 	int selectedIndex = m_pParameterNameInputs[tab]->currentIndex();
