@@ -472,16 +472,23 @@ TriggerItem* TriggerList::CreateNewTriggerItem() {
 	// Sensor input
 	if (m_currentTab == 0) {
 		int eventSourceIndex = m_pPresetEventSourceInput->currentIndex();
-		int sampleNameIndex = m_pPresetSampleNameInput->currentIndex();
-		int fieldIndex = m_pPresetFieldIndexInput->currentIndex();
-		EventSource& eventSource = m_pStorageManager->GetEventSources().at(eventSourceIndex);
-		SampleName& sampleName = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex);
-		SensorDataField& currentField = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex).m_fields.at(fieldIndex);
+		if (eventSourceIndex >= 0) {
+			EventSource& eventSource = m_pStorageManager->GetEventSources().at(eventSourceIndex);
+			pDescription->m_eventSource = eventSource.m_name;
+		}
 
-		pDescription->m_eventSource = eventSource.m_name;
-		pDescription->m_sampleName = sampleName.m_name;
-		pDescription->m_fieldName = currentField.m_name;
-		pDescription->m_fieldIndex = currentField.m_index;
+		int sampleNameIndex = m_pPresetSampleNameInput->currentIndex();
+		if (sampleNameIndex >= 0) {
+			SampleName& sampleName = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex);
+			pDescription->m_sampleName = sampleName.m_name;
+		}
+
+		int fieldIndex = m_pPresetFieldIndexInput->currentIndex();
+		if (fieldIndex >= 0) {
+			SensorDataField& currentField = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex).m_fields.at(fieldIndex);
+			pDescription->m_fieldName = currentField.m_name;
+			pDescription->m_fieldIndex = currentField.m_index;
+		}
 
 		pDescription->m_comparisionFunction = (ComparisonType)m_pPresetComparisonFunctionInput->currentIndex();
 		pDescription->m_comparisonValue = m_pPresetComparisonValueInput->GetValue();
