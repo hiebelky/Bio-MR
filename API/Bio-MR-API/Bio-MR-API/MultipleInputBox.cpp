@@ -2,13 +2,13 @@
 
 #include <QDoubleSpinBox>
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QHBoxLayout>
 
 MultipleInputBox::MultipleInputBox(InputType type, QWidget* parent, Qt::WindowFlags flags)
 	: QWidget(parent, flags)
 {
 	// Setup the layout
-	setLayout(new QGridLayout(this));
+	setLayout(new QHBoxLayout(this));
 	layout()->setContentsMargins(0, 0, 0, 0);
 
 	// Set up the spin box
