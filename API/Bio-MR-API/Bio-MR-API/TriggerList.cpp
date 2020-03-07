@@ -47,7 +47,9 @@ TriggerList::TriggerList(StorageManager* sm, QWidget* parent) : QWidget(parent),
 	// Create the add/remove buttons
 	QWidget* pAddRemoveRow = new QWidget(this);
 	QPushButton* pAddButton = new QPushButton("Add", this);
+	pAddButton->setToolTip("Add a new automatic trigger");
 	QPushButton* pRemoveButton = new QPushButton("Remove", this);
+	pRemoveButton->setToolTip("Remove the highlighted automatic trigger");
 
 	QHBoxLayout* pAddRemoveRowLayout = new QHBoxLayout(this);
 	pAddRemoveRowLayout->setContentsMargins(0, 0, 0, 0);
@@ -538,8 +540,8 @@ TriggerItem::TriggerItem(TriggerDescription* desc)
 		.arg(desc->m_parameterName)
 		.arg(desc->m_parameterValue);
 	setText(objectText);
-}
-	else {
+	setToolTip(objectText);
+	} else {
 		QString objectText = QString("If %1::%2::%3 %4 %5, set %6 to %7")
 			.arg(desc->m_eventSource)
 			.arg(desc->m_sampleName)
@@ -549,6 +551,7 @@ TriggerItem::TriggerItem(TriggerDescription* desc)
 			.arg(desc->m_parameterName)
 			.arg(desc->m_parameterValue);
 		setText(objectText);
+		setToolTip(objectText);
 	}
 
 }
