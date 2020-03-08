@@ -30,6 +30,10 @@ NetworkManager::NetworkManager(QObject* parent) : QObject(parent)
 	m_pGameEngineLog->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
 }
 
+void NetworkManager::SetPassthroughMode(bool checked) {
+	m_isPassthroughMode = checked;
+}
+
 
 
 // ----------------------------------------------------------------------
@@ -51,6 +55,11 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 	QByteArray& rawData = datagram.data();
 	QString dataString = QString::fromUtf8(rawData);
 	QStringList splitData = dataString.split(";");
+
+	// Automatically pass all data to the game engine
+	if (m_isPassthroughMode) {
+		SendGameEngineDatagram(dataString);
+	}
 
 	// Log the data
 	QTextStream stream(m_pIMotionsLog);

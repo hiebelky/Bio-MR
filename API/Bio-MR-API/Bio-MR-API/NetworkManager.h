@@ -33,6 +33,8 @@ public slots:
 	void SendGameEngineDatagram(QString& datagram);
 	void SendIMotionsDatagram(QString& datagram);
 
+	void SetPassthroughMode(bool checked);
+
 signals:
 	void registerGameEngineCommand(GameEngineRegisterCommandDatagram& newCommand);
 	void imotionsDataRecieved(IMotionsDatagram& newDatagram);
@@ -46,6 +48,9 @@ private:
 	void ReadGameEngineDatagrams();
 	void ProcessGameEngineDatagram(QNetworkDatagram& datagram);
 
+	// When in this mode, the network manager forwards all packets
+	// from iMotions directly to the game engine
+	bool m_isPassthroughMode = false;
 
 	// One socket for each communication path
 	QUdpSocket* m_pIMotionsListener = nullptr;

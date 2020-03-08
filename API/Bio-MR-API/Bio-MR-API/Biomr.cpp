@@ -10,9 +10,11 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QFrame>
+#include <QMenuBar>
+#include <QStatusBar>
 
 Biomr::Biomr(QWidget* parent)
-	: QWidget(parent)
+	: QMainWindow(parent)
 {
 	// Set up the network manager
 	m_pNetworkManager = new NetworkManager(this);
@@ -23,10 +25,13 @@ Biomr::Biomr(QWidget* parent)
 	m_pStorageManager = new StorageManager();
 
 
-	// Set up the layouts
+	// Set up the central widget
+	QWidget* pCentralWidget = new QWidget(this);
 	m_pMainLayout = new QGridLayout(this);
-	setLayout(m_pMainLayout);
+	pCentralWidget->setLayout(m_pMainLayout);
+	setCentralWidget(pCentralWidget);
 
+	// Build the other layouts
 	m_pAutomaticTriggerLayout = new QVBoxLayout(this);
 	m_pManualControlLayout = new QVBoxLayout(this);
 	DatagramCounter* pDatagramCounter = new DatagramCounter(m_pNetworkManager, this);
@@ -67,6 +72,17 @@ Biomr::Biomr(QWidget* parent)
 	pManualLabel->setAlignment(Qt::AlignCenter);
 	m_pManualControlLayout->addWidget(pManualLabel);
 	m_pManualControlLayout->addStretch();
+
+	// Set up the menu bar
+	QMenu* pFileMenu = menuBar()->addMenu("File");
+	QMenu* pEditMenu = menuBar()->addMenu("Edit");
+
+	QAction* pPassthroughMode = new QAction("&Passthrough Mode", this);
+	pPassthroughMode->setCheckable(true);
+	pPassthroughMode->setShortcut(QKeySequence::Print);
+	pPassthroughMode->setStatusTip("Forward all packets from iMotions to the Game Engine");
+	connect(pPassthroughMode, &QAction::triggered, m_pNetworkManager, &NetworkManager::SetPassthroughMode);
+	pEditMenu->addAction(pPassthroughMode);
 }
 
 

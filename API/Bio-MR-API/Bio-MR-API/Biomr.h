@@ -2,7 +2,7 @@
 
 #include "Types.h"
 
-#include <QWidget>
+#include <QMainWindow>
 
 // Forward Declare
 class NetworkManager;
@@ -12,7 +12,7 @@ class QGridLayout;
 class QVBoxLayout;
 
 
-class Biomr : public QWidget
+class Biomr : public QMainWindow
 {
 	Q_OBJECT
 
@@ -24,8 +24,6 @@ public slots:
 	void HandleAutomaticTriggers(IMotionsDatagram& datagram);
 
 private:
-	//Ui::BiomrClass ui;
-
 	NetworkManager* m_pNetworkManager = nullptr;
 	StorageManager* m_pStorageManager = nullptr;
 
