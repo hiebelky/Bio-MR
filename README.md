@@ -31,3 +31,19 @@ CS51 Design and implementation of a framework for bio-informed 3D user interacti
 1. Clone the repository.
 2. Open "Bio-MR/API/Bio-MR-API/Bio-MR-API.sln" using Visual Studio 2019.
 3. Press F5 to build and run.
+
+
+## Building the Unreal Engine 4 Scene
+
+### 1. Install UE4
+1. Download the Epic Games Launcher: https://www.epicgames.com/store/en-US/download
+2. Create an Epic Games account, verify your email address.
+3. Start the Epic Games Launcher, select the Unreal Engine tab, the install UE4 4.23.3.
+![](images/Unreal_Engine_Install.PNG)
+
+### 2. Run the project
+1. Clone the repository.
+2. Setup your VR headset using Oculus software or SteamVR.
+3. Open "Bio-MR/UE4/vr_test.uproject" using Unreal Engine 4.
+4. Launch the build using Alt+Shift+P or click the launch button. NOTE: The BioMR API needs to be running before the UE4 project is launched
+![](images/Unreal_Engine_Start.PNG)
