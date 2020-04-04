@@ -107,11 +107,15 @@ void Biomr::AddParameterControlWidget(GameEngineRegisterCommandDatagram& params)
 }
 
 
-
+// Default function for evaluating trigger conditions
+// Should be replaced by customer code in the future
 void Biomr::HandleAutomaticTriggers(IMotionsDatagram& datagram)
 {
+	// Loop through all available triggers
 	auto& allTriggers = m_pStorageManager->GetAllTriggers();
 	for (auto it : allTriggers) {
+
+		// Ensure the sensor types match
 		if (datagram.m_eventSource.compare(it->m_eventSource, Qt::CaseInsensitive) != 0) {
 			continue;
 		}
@@ -122,6 +126,7 @@ void Biomr::HandleAutomaticTriggers(IMotionsDatagram& datagram)
 			continue;
 		}
 
+		// Ensure the comparison value types match
 		bool isCompareValueNumber;
 		it->m_comparisonValue.toDouble(&isCompareValueNumber);
 
@@ -132,6 +137,7 @@ void Biomr::HandleAutomaticTriggers(IMotionsDatagram& datagram)
 			continue;
 		}
 
+		// Evaluate the comparison function either for numbers or for strings
 		bool shouldTrigger = false;
 		if (isDataValueNumber) {
 			double dataValue = datagram.m_rawData[it->m_fieldIndex].toDouble();
@@ -178,6 +184,7 @@ void Biomr::HandleAutomaticTriggers(IMotionsDatagram& datagram)
 			}
 		}
 
+		// If threshold is exceeded, update a scene parameter based on the trigger
 		if (shouldTrigger) {
 			if (it->m_controlWidget) {
 				it->m_controlWidget->UpdateValueExtern(it->m_parameterValue);

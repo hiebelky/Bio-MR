@@ -70,6 +70,7 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 		return;
 	}
 
+	// Fill the imotions datagram structure
 	IMotionsDatagram result;
 	result.m_seqNumber = splitData[0];
 	result.m_eventSource = splitData[1];
@@ -129,17 +130,19 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 			return;
 		}
 
+		// Build the command structure
 		GameEngineRegisterCommandDatagram command = { splitData[0], splitData[1], splitData[2], splitData[3], splitData[4], splitData[5] };
 
+		// Let the GUI know to add a new parameter control widget
 		emit registerGameEngineCommand(command);
 	}
 
-	if (splitData.at(0).compare("PickedUpItem", Qt::CaseInsensitive) == 0)
+	if (splitData.at(0).compare("GrabItem", Qt::CaseInsensitive) == 0)
 	{
 		// TODO: Forward this to imotions
 	}
 
-	if (splitData.at(0).compare("Navigating", Qt::CaseInsensitive) == 0)
+	if (splitData.at(0).compare("Navigate", Qt::CaseInsensitive) == 0)
 	{
 		// TODO: Forward this to imotions
 	}

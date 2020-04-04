@@ -12,7 +12,7 @@ const char* SENSOR_CONFIGURATION_PATH = "SensorConfiguration.json";
 // ***********************************************
 StorageManager::StorageManager() : QObject()
 {
-	// Read the entire file
+	// Read the entire file of configured sensors
 	std::ifstream file(SENSOR_CONFIGURATION_PATH);
 	Json::Value root;
 	file >> root;
@@ -41,6 +41,7 @@ StorageManager::StorageManager() : QObject()
 				QString minValue = QString::fromStdString(field.get("Min", "0").asString());
 				QString maxValue = QString::fromStdString(field.get("Max", "0").asString());
 
+				// Store configured sensor information to autofill combo boxes
 				AddSensorDataField(eventSourceString, sampleNameString, dataFieldString, type, dataFieldIndex, minValue, maxValue);
 			}
 		}
