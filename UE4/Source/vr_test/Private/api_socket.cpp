@@ -44,7 +44,6 @@ void Aapi_socket::Tick(float DeltaTime)
 void Aapi_socket::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	//~~~~~~~~~~~~~~~~
 
 	delete UDPReceiver;
 
@@ -80,8 +79,10 @@ bool Aapi_socket::StartUDPReceiver(const FString& YourChosenSocketName, const FS
 	// Set the default buffer size
 	int32 BufferSize = 2 * 1024 * 1024;
 
+	// Build the socket
 	ListenSocket = FUdpSocketBuilder(*YourChosenSocketName).AsNonBlocking().AsReusable().BoundToEndpoint(Endpoint).WithReceiveBufferSize(BufferSize);
 
+	// Set up the UDP reciever
 	FTimespan ThreadWaitTime = FTimespan::FromMilliseconds(100);
 	UDPReceiver = new FUdpSocketReceiver(ListenSocket, ThreadWaitTime, TEXT("UDP RECEIVER"));
 	UDPReceiver->OnDataReceived().BindUObject(this, &Aapi_socket::Recv);
@@ -127,6 +128,7 @@ FString Aapi_socket::StringFromBinaryArray(TArray<uint8> BinaryArray)
 
 void Aapi_socket::PrintToLog(FString toPrint)
 {
+	// Appends every new datagram to a log file
 	toPrint.Append("\r\n");
 	FString SaveDirectory = FPaths::ProjectLogDir();
 	FString FileName = FString("UDPLog.txt");
@@ -163,6 +165,7 @@ void Aapi_socket::ProcessDatagram(UDPDatagarm& datagram)
 		return;
 	}
 
+	// Call the correct blueprint function based on the command
 	if (datagram.m_commandName == RAIN_INTENSITY_NAME) {
 		float val = FCString::Atof(*datagram.m_arguments[0]);
 		SetRainIntensity(val);
@@ -216,12 +219,15 @@ bool Aapi_socket::SendUDPDatagram(FString ToSend)
 
 	int32 BytesSent = 0;
 
+	// Convert wide characters to utf-8 encoding
 	ANSICHAR* utf8Data = TCHAR_TO_UTF8(*ToSend);
 	int32 count = ToSend.Len();
 	uint8* data = reinterpret_cast<uint8*>(utf8Data);
 
+	// Send the bytes over the socket connection
 	SenderSocket->SendTo(data, count, BytesSent, *RemoteAddr);
 
+	// Ensure all bytes were sent
 	if (BytesSent <= 0)
 	{
 		ScreenMsg("Failed to send datagram of size: ", count);

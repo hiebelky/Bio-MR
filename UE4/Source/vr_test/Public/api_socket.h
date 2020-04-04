@@ -79,7 +79,9 @@ public:
 	FSocket* SenderSocket = nullptr;
 	TSharedPtr<FInternetAddr> RemoteAddr;
 
+	UFUNCTION(BlueprintCallable)
 	bool SendUDPDatagram(FString ToSend);
+
 	bool StartUDPSender(const FString& YourChosenSocketName,const FString& TheIP,const int32 ThePort);
 
 
@@ -88,23 +90,29 @@ public:
 	// -------------------------------------
 	// Debug messages
 	// -------------------------------------
-	bool ShowOnScreenDebugMessages = true;
+	bool ShowOnScreenDebugMessages = false;
 	float OnScreenDebugMessageTimeout = 100.f;
 
 	FORCEINLINE void ScreenMsg(const FString& Msg)
 	{
-		if (!ShowOnScreenDebugMessages) return;
-		GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, *Msg, false, FVector2D(2.f, 2.f));
+		if (ShowOnScreenDebugMessages)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, *Msg, false, FVector2D(2.f, 2.f));
+		}
 	}
 	FORCEINLINE void ScreenMsg(const FString& Msg, const float Value)
 	{
-		if (!ShowOnScreenDebugMessages) return;
-		GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, FString::Printf(TEXT("%s %f"), *Msg, Value), false, FVector2D(2.f, 2.f));
+		if (ShowOnScreenDebugMessages)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, FString::Printf(TEXT("%s %f"), *Msg, Value), false, FVector2D(2.f, 2.f));
+		}
 	}
 	FORCEINLINE void ScreenMsg(const FString& Msg, const FString& Msg2)
 	{
-		if (!ShowOnScreenDebugMessages) return;
-		GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2), false, FVector2D(2.f, 2.f));
+		if (ShowOnScreenDebugMessages)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, OnScreenDebugMessageTimeout, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2), false, FVector2D(2.f, 2.f));
+		}
 	}
 	void PrintToLog(FString toPrint);
 };
