@@ -137,14 +137,48 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 		emit registerGameEngineCommand(command);
 	}
 
+
 	if (splitData.at(0).compare("GrabItem", Qt::CaseInsensitive) == 0)
 	{
-		// TODO: Forward this to imotions
+		// Remove the "GrabItem" string
+		splitData.removeFirst();
+
+		// This command must have 1 or more arguments
+		if (splitData.length() < 1) {
+			return;
+		}
+
+		if (splitData.at(0).compare("1") == 0) {
+			// Create a marker in iMotions for a user picking up an item
+			QString outDatagram = QString("M;2;;;Grab Item;User has picked up an item;D;\r\n");
+			SendIMotionsDatagram(outDatagram);
+		} else {
+			// Close the marker in iMotions
+			QString outDatagram = QString("M;2;;;Drop Item;User has dropped an item;D;\r\n");
+			SendIMotionsDatagram(outDatagram);
+		}
 	}
+
 
 	if (splitData.at(0).compare("Navigate", Qt::CaseInsensitive) == 0)
 	{
-		// TODO: Forward this to imotions
+		// Remove the "Navigate" string
+		splitData.removeFirst();
+
+		// This command must have 1 or more arguments
+		if (splitData.length() < 1) {
+			return;
+		}
+
+		if (splitData.at(0).compare("1") == 0) {
+			// Create a marker in iMotions for a user navigating
+			QString outDatagram = QString("M;2;;;Begin Navigation;User has started navigation;D;\r\n");
+			SendIMotionsDatagram(outDatagram);
+		} else {
+			// Close the marker in iMotions
+			QString outDatagram = QString("M;2;;;End Navigation;User has completed navigation;D;\r\n");
+			SendIMotionsDatagram(outDatagram);
+		}
 	}
 }
 

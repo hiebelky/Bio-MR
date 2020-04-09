@@ -1,0 +1,5 @@
+<EventSource Version="1" Id="HRSensor" Name="MyHRSensor">    
+	<Sample Id="HRData" Name="MyHRData">
+		<Field Id="HeartRate" Range="Variable" Min="0" Max="220" />
+	</Sample>
+</EventSource>

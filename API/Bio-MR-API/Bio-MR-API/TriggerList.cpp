@@ -486,7 +486,7 @@ TriggerItem* TriggerList::CreateNewTriggerItem() {
 		}
 
 		int fieldIndex = m_pPresetFieldIndexInput->currentIndex();
-		if (fieldIndex >= 0) {
+		if (fieldIndex >= 0 && sampleNameIndex >= 0) {
 			SensorDataField& currentField = m_pStorageManager->GetEventSources().at(eventSourceIndex).m_sampleNames.at(sampleNameIndex).m_fields.at(fieldIndex);
 			pDescription->m_fieldName = currentField.m_name;
 			pDescription->m_fieldIndex = currentField.m_index;

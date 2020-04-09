@@ -141,6 +141,23 @@
 					]
 				}
 			]
-		}
+		},
+		{
+			"Name" : "MyHRSensor",
+			"SampleNames":[
+				{
+					"Name" : "MyHRData",
+					"Fields" : [
+						{
+							"Name" : "HeartRate",
+							"Index": 0,
+							"Type" : "Int",
+							"Min": 0,
+							"Max": 250
+						}
+					]
+				}
+			]
+		}			
 	]
 }
