@@ -38,7 +38,7 @@ CS51 Design and implementation of a framework for bio-informed 3D user interacti
 ### 1. Install UE4
 1. Download the Epic Games Launcher: https://www.epicgames.com/store/en-US/download
 2. Create an Epic Games account, verify your email address.
-3. Start the Epic Games Launcher, select the Unreal Engine tab, the install UE4 4.23.3.
+3. Start the Epic Games Launcher, select the Unreal Engine tab, the install UE4 4.24.3.
 ![](images/Unreal_Engine_Install.PNG)
 
 ### 2. Run the project
