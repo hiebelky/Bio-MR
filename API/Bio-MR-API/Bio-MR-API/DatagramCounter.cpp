@@ -18,6 +18,7 @@ DatagramCounter::DatagramCounter(NetworkManager* networkManager, QWidget* parent
 	QLabel* pImotionsLabel = new QLabel("iMotions (rec/send)", this);
 	pImotionsLabel->setToolTip("The number of datagrams recieved from and sent to iMotions.");
 	m_pIMotionsCounter = new QLabel("0 / 0", this);
+	m_pIMotionsCounter->setObjectName("iMotions Counter");
 	m_pIMotionsCounter->setToolTip("The number of datagrams recieved from and sent to iMotions.");
 
 	// Create the game engine statistics aligned right
@@ -25,6 +26,7 @@ DatagramCounter::DatagramCounter(NetworkManager* networkManager, QWidget* parent
 	pGameEngineLabel->setToolTip("The number of datagrams recieved from and sent to the game engine.");
 	m_pGameEngineCounter = new QLabel("0 / 0", this);
 	m_pGameEngineCounter->setToolTip("The number of datagrams recieved from and sent to the game engine.");
+	m_pGameEngineCounter->setObjectName("Game Engine Counter");
 	pGameEngineLabel->setAlignment(Qt::AlignRight);
 	m_pGameEngineCounter->setAlignment(Qt::AlignRight);
 

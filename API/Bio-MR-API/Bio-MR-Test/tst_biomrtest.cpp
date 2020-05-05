@@ -4,6 +4,7 @@
 #include <QStandardItemModel>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QNetworkDatagram>
+#include <QtWidgets/QLabel>
 
 // add necessary includes here
 #include "../Bio-MR-API/Biomr.h"
@@ -22,7 +23,7 @@ public:
     ~BioMRTest();
 
 private slots:
-    void testAutomaticTrigger();
+    void guiTest();
 
 };
 
@@ -36,7 +37,7 @@ BioMRTest::~BioMRTest()
     
 }
 
-void BioMRTest::testAutomaticTrigger()
+void BioMRTest::guiTest()
 {
     // Create a game engine parameter
     GameEngineRegisterCommandDatagram parameter = { "GameEngineParameter", "false", "int", "0", "1", "100" };
@@ -89,6 +90,36 @@ void BioMRTest::testAutomaticTrigger()
     QByteArray rawData = recDatagram.data();
     QString dataString = QString::fromUtf8(rawData);
     QCOMPARE(dataString, "GameEngineParameter;2;");
+
+
+
+
+
+    // Test manually changing a control widget
+    QString tempval = "3";
+    controlWidget->UpdateValueExtern(tempval);
+
+    // Wait 100 ms to ensure the datagram was sent and recieved
+    QTest::qWait(100);
+
+    // Ensure one more datagram was sent
+    QCOMPARE(spy.count(), 2);
+
+    // Read the datagram to ensure the data is correct
+    recDatagram = recieveSocket->receiveDatagram();
+    rawData = recDatagram.data();
+    dataString = QString::fromUtf8(rawData);
+    QCOMPARE(dataString, "GameEngineParameter;3;");
+
+
+
+    // Test the datagram counter
+    QLabel* iMotionsCounter = this->findChild<QLabel*>("iMotions Counter");
+    QLabel* gameEngineCounter = this->findChild<QLabel*>("Game Engine Counter");
+    QVERIFY(iMotionsCounter);
+    QVERIFY(gameEngineCounter);
+    QCOMPARE(iMotionsCounter->text(), "1 / 0");
+    QCOMPARE(gameEngineCounter->text(), "0 / 2");
 
     //QTest::qWait(10000);
 }
