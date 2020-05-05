@@ -23,7 +23,7 @@ public slots:
 	void AddParameterControlWidget(GameEngineRegisterCommandDatagram& params);
 	void HandleAutomaticTriggers(IMotionsDatagram& datagram);
 
-private:
+protected:
 	NetworkManager* m_pNetworkManager = nullptr;
 	StorageManager* m_pStorageManager = nullptr;
 

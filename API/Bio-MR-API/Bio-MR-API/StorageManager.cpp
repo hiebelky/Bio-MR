@@ -14,6 +14,11 @@ StorageManager::StorageManager() : QObject()
 {
 	// Read the entire file of configured sensors
 	std::ifstream file(SENSOR_CONFIGURATION_PATH);
+
+	if (!file.is_open()) {
+		return;
+	}
+
 	Json::Value root;
 	file >> root;
 

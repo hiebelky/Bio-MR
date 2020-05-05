@@ -5,16 +5,28 @@ VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bio-MR-API", "Bio-MR-API\Bio-MR-API.vcxproj", "{B3CC8DE4-F31E-4291-B5BA-425D593D1652}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bio-MR-Test", "Bio-MR-Test\Bio-MR-Test.vcxproj", "{6E431B95-DE94-385A-8443-D07A58C0C276}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B3CC8DE4-F31E-4291-B5BA-425D593D1652}.Debug|x64.ActiveCfg = Debug|x64
 		{B3CC8DE4-F31E-4291-B5BA-425D593D1652}.Debug|x64.Build.0 = Debug|x64
+		{B3CC8DE4-F31E-4291-B5BA-425D593D1652}.Debug|x86.ActiveCfg = Debug|x64
 		{B3CC8DE4-F31E-4291-B5BA-425D593D1652}.Release|x64.ActiveCfg = Release|x64
 		{B3CC8DE4-F31E-4291-B5BA-425D593D1652}.Release|x64.Build.0 = Release|x64
+		{B3CC8DE4-F31E-4291-B5BA-425D593D1652}.Release|x86.ActiveCfg = Release|x64
+		{6E431B95-DE94-385A-8443-D07A58C0C276}.Debug|x64.ActiveCfg = Debug|x64
+		{6E431B95-DE94-385A-8443-D07A58C0C276}.Debug|x64.Build.0 = Debug|x64
+		{6E431B95-DE94-385A-8443-D07A58C0C276}.Debug|x86.ActiveCfg = Debug|x64
+		{6E431B95-DE94-385A-8443-D07A58C0C276}.Release|x64.ActiveCfg = Release|x64
+		{6E431B95-DE94-385A-8443-D07A58C0C276}.Release|x64.Build.0 = Release|x64
+		{6E431B95-DE94-385A-8443-D07A58C0C276}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
