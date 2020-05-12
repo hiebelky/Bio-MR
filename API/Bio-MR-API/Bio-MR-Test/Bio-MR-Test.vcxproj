@@ -100,8 +100,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>biomr.obj;DatagramCounter.obj;moc_Biomr.obj;moc_DatagramCounter.obj;moc_MultipleInputBox.obj;moc_NetworkManager.obj;moc_ParameterControlWidget.obj;moc_StorageManager.obj;moc_TriggerList.obj;MultipleInputBox.obj;NetworkManager.obj;ParameterControlWidget.obj;StorageManager.obj;TriggerList.obj;jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SOLUTIONDIR)ThirdParty\jsoncpp\lib\;$(SOLUTIONDIR)\Bio-MR-API\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>false</GenerateDebugInformation>
