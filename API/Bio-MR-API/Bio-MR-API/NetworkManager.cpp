@@ -56,16 +56,16 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 	QString dataString = QString::fromUtf8(rawData);
 	QStringList splitData = dataString.split(";");
 
-	// Automatically pass all data to the game engine
+	// Automatically pass raw data to the game engine if passthrough mode is enabled
 	if (m_isPassthroughMode) {
 		SendGameEngineDatagram(dataString);
 	}
 
-	// Log the data
+	// Log the data to a file for debugging
 	QTextStream stream(m_pIMotionsLog);
 	stream << dataString << "\n";
 
-	// Must have length 5
+	// This type of datagram must have a length of 5 or more
 	if (splitData.size() < 5) {
 		return;
 	}
@@ -78,6 +78,7 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 	result.m_timestamp = splitData[3];
 	result.m_mediaTime = splitData[4];
 
+	// Remove the header fields
 	splitData.removeAt(0);
 	splitData.removeAt(0);
 	splitData.removeAt(0);
@@ -85,6 +86,7 @@ void NetworkManager::ProcessImotionsDatagram(QNetworkDatagram& datagram)
 	splitData.removeAt(0);
 	result.m_rawData = splitData;
 
+	// Allow the data to be processed elsewhere
 	emit imotionsDataRecieved(result);
 }
 
@@ -100,21 +102,23 @@ void NetworkManager::ReadGameEngineDatagrams()
 		QNetworkDatagram datagram = m_pGameEngineListener->receiveDatagram();
 		ProcessGameEngineDatagram(datagram);
 		
+		// Keep track of the datagram count
 		m_gameEngineRecievedDatagramCounter++;
 		emit datagramCountChanged();
 	}
 }
 void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 {
+	// Split the data on semicolons
 	QByteArray& rawData = datagram.data();
 	QString dataString = QString::fromUtf8(rawData);
 	QStringList splitData = dataString.split(";");
 
-	// Log the data
+	// Log the data to a file for debug
 	QTextStream stream(m_pGameEngineLog);
 	stream << dataString << "\n";
 
-	// Command length must be larger than 1
+	// Commands from the game engine must have at least 1 argument
 	if (splitData.length() < 1) {
 		return;
 	}
@@ -149,7 +153,7 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 		}
 
 		if (splitData.at(0).compare("1") == 0) {
-			// Create a marker in iMotions for a user picking up an item
+			// Create a marker region in iMotions for a user picking up an item
 			QString outDatagram = QString("M;2;;;Grab Item;User has picked up an item;D;\r\n");
 			SendIMotionsDatagram(outDatagram);
 		} else {
@@ -171,7 +175,7 @@ void NetworkManager::ProcessGameEngineDatagram(QNetworkDatagram& datagram)
 		}
 
 		if (splitData.at(0).compare("1") == 0) {
-			// Create a marker in iMotions for a user navigating
+			// Create a marker region in iMotions for a user navigating
 			QString outDatagram = QString("M;2;;;Begin Navigation;User has started navigation;D;\r\n");
 			SendIMotionsDatagram(outDatagram);
 		} else {
