@@ -2,6 +2,7 @@
 CS51 Design and implementation of a framework for bio-informed 3D user interaction
 
 ## Building the API
+This section is for developers. If you just want to run the program, download the prebuilt version: https://github.com/hiebelky/Bio-MR/releases
 
 ### 1. Install Qt
 1. Download the Qt Online Installer from the bottom of this page: https://www.qt.io/download-open-source
